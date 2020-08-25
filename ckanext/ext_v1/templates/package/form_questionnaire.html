@@ -1,0 +1,62 @@
+{% resource 'ext_v1/form_submit.js' %}
+{% resource 'ext_v1/actions_resource.js' %}
+
+<link rel="stylesheet" href="/questionnaire_style.css">
+
+<!--resource-edit-->
+<form id="form-target" data-module="actions_resource" class="dataset-form dataset-resource-form" method="post"
+    enctype="multipart/form-data">
+    <ol class="stages stage-2" id="all_stages">
+
+    </ol>
+    <h3 id="form-title" style="display: block; text-align: center;">Questionnaire -
+    </h3>
+    <div class="page-loading-loader" id="loader" style="display: none ;width: 100%; height: 100%;">
+        <img style="margin: auto; display: block;" src="/loader.gif" />
+        <p class="saving_loader">Saving...</p>
+    </div>
+    <div id="text-initial-presentation">
+        <div class="form-group" style="text-align: center; margin: 0 32px 0 32px;">
+            <p>
+                The follow questionnaire it consists on several questions in order to collect specific information
+                that enables us to design and structure more concise guidelines.
+                Please answer to all the questions with serenity and truthfulness.
+            </p>
+        </div>
+        <div class="form-group" style="text-align: center;">
+            <span class="info-block info-block-small">
+                <i class="fa fa-info-circle"></i>
+                Above its a resume of all the modules included in the questionnaire
+            </span>
+        </div>
+    </div>
+
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    </div>
+
+    <div id="quest_content_form">
+    </div>
+
+    <div class="panel-group" id="finish_quest" aria-multiselectable="true"
+        style="display: none; padding-top: 24px ;margin-top: 24px; border-top: 1px solid lightgray; text-align: center;">
+        <p>Thank you for your contribution!</p>
+        <p>We hope that you enjoyed our questionnaire.</p>
+        <p>In case of any doubts or constructive criticism, please contact us.</p>
+        <p>
+        <h3>To submit the questionnaire, save and complete it.</h3>
+        </p>
+    </div>
+
+    <div class="form-actions">
+        <button id="cancel_quest" class=" btn btn-default" type="button">Cancel</button>
+        <button id="start_quest" type="button" style="display: inline-block;" class="btn btn-success" name="save"
+            id="forms_normal">Start</button>
+        <button id="next_quest" type="button" style="display: none;" class="btn btn-primary"
+            id="forms_normal">Next</button>
+        <button id="finalize_quest" type="button" style="display: none;" class="btn btn-primary"
+            id="forms_normal">Finalize</button>
+        <button id="submitForm" type="button" style="display: none;" class="btn btn-primary"
+            data-module="form_submit">Save & Close</button>
+    </div>
+
+</form>
