@@ -1,0 +1,75 @@
+{% extends "package/edit_base.html" %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="/questionnaire_style.css" />
+{% endblock %}
+
+{% block primary_content %}
+<section class="module">
+    {% block page_header %}{% endblock %}
+    <div class="module-content">
+        {% block primary_content_inner %}
+        {% block form %}
+        {#- passing c to a snippet is bad but is required here
+              for backwards compatibility with old templates and
+              plugins using setup_template_variables() -#}
+        {{- h.snippet(form_snippet, c=c, **form_vars) -}}
+        {% endblock %}
+        {% endblock %}
+    </div>
+</section>
+{% endblock %}
+
+{% block secondary_content %}
+{% block info_module %}
+<section class="module module-narrow module-shallow">
+    <h2 class="module-heading"><i class="fa fa-info-circle"></i> {{ _('What are datasets?') }}</h2>
+    <div class="module-content">
+        <p>
+
+            A CKAN Dataset is a collection of data resources (such as files),
+            together with a description and other information, at a fixed URL.
+            Datasets are what users see when searching for data.
+
+        </p>
+    </div>
+    <div class="module-content side-dataset">
+        <p style="margin-top: 16px; position: fixed;">
+        <h3>Helper on Custom Fields</h3>
+        <span class="italic-dataset-helper">Here we have all the custom fields that you can use to
+            identify your dataset.</span>
+        <table class="table-dataset">
+            <tr>
+                <th>Key</th>
+                <th>Possible values</th>
+            </tr>
+            <tr>
+                <td>is_templating</td>
+                <td>true or false</td>
+            </tr>
+            <tr>
+                <td>is_data_store</td>
+                <td>true or false</td>
+            </tr>
+        </table>
+        <p><span style="font-weight: bold;">is_templating</span>
+            - This field has the purpose of defining a dataset as a
+            survey content store.
+        </p>
+        <p><span style="font-weight: bold;">is_data_store</span>
+            - This field has the purpose of defining a dataset as a
+            data store from the questionnaires responses.
+        </p>
+
+        </p>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block resources_module %}
+{# TODO: Pass in a list of previously created resources and the current package dict #}
+{% snippet "package/snippets/resources.html", pkg={}, action='new_resource' %}
+{% endblock %}
+{% endblock %}

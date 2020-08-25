@@ -1,0 +1,21 @@
+{% extends "package/questionnaire_form_page.html" %}
+
+{% set logged_in = true if c.userobj else false %}
+
+{% block subtitle %}{{ _('New questionnaire') }}{% endblock %}
+
+{% block breadcrumb_content_selected %}{% endblock %}
+{% block breadcrumb_content %}
+<li class="active"><a href="#">{{ _('New Questionnaire') }}</a></li>
+{% endblock %}
+<!-- Change snippet for the html page you want-->
+{% block form %}{% snippet 'package/form_questionnaire.html' , data=data, errors=errors, error_summary=error_summary, include_metadata=false, pkg_name=pkg_name, stage=stage, allow_upload=g.ofs_impl and logged_in, dataset_type=dataset_type %}{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% resource 'vendor/fileupload' %}
+{% resource 'ext_v1/form_submit.js' %}
+{% resource 'ext_v1/actions_resource.js' %}
+{% endblock %}
+
+<!--resource-edit-->

@@ -1,0 +1,20 @@
+{% set intro = g.site_intro_text %}
+
+{% resource 'ext_v1/list_questionnaires.js' %}
+
+<div class="module-content box">
+    <header>
+        {% if intro %}
+        {{ h.render_markdown(intro) }}
+        {% else %}
+        <h1 class="page-heading">{{ _("Questionnaires for the evaluation of QOL") }}</h1>
+        {% endif %}
+    </header>
+    <section class="group-list module module-narrow module-shallow">
+        <!-- Snippet snippets/package_list.html start -->
+        <ul data-module="list_questionnaires" class="list-unstyled dataset-list" id="list-quests">
+
+        </ul>
+        <!-- Snippet snippets/package_list.html end -->
+    </section>
+</div>

@@ -1,0 +1,62 @@
+table, th, td {
+    border: 1px solid black;
+  }
+
+td, th{
+    text-align: center; 
+}
+
+table {
+    table-layout: auto;
+    margin-bottom: 24px !important;
+}
+
+input {
+    width: 100%;
+}
+
+.saving_loader{
+    text-align: center; 
+    color: #005d7a; 
+    font-size: 16px;
+}
+
+.subtypes{
+    color:#005d7a;
+    font-weight:bold;
+    font-size: 16px;
+    margin-top: 24px;
+}
+
+.subtypes-sub{
+    color:#68B9D2;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.questions_mandatory{
+    font-weight: bold; 
+    text-align: center; 
+    margin-top: 32px;
+}
+
+.side-dataset{
+    margin-top: 1100px !important;
+}
+
+.italic-dataset-helper{
+    font-style: italic;
+    font-size: 12px;
+    margin-bottom: 16px;
+}
+
+.table-dataset{
+    width:100%;
+    margin-top: 24px;
+}
+
+@media only screen and (max-width: 767px) {
+    .side-dataset{
+        margin-top: 0 !important;
+    }
+}
