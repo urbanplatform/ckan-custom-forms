@@ -6,12 +6,14 @@ ckan.module('list_questionnaires', function ($) {
             //ckan API Key
             var api_ckan_key = "3f5c3706-ca58-4abc-bc32-6758e2509bcc";
             //var api_ckan_key = "4c5e4e41-3056-41cf-9353-7b63438a7fcf";
+            const init_url = this.sandbox.client.endpoint;
+            var url = init_url + "/";
             //Get path of url to know the type of the questionnaire
             //Call questionnaires from specific dataset on staging
 
             $.ajax({
                 //url: 'http://ckan.staging.ubiwhere.com/api/3/action/current_package_list_with_resources',
-                url: 'http://127.0.0.1:7000/api/3/action/current_package_list_with_resources',
+                url: url + 'api/3/action/current_package_list_with_resources',
                 type: 'GET',
                 headers: {
                     "Authorization": api_ckan_key
