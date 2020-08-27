@@ -8,7 +8,8 @@ ckan.module('form_submit', function ($) {
             var auth = "3f5c3706-ca58-4abc-bc32-6758e2509bcc";
             // CKAN URL + API init
             // TODO How to change this to dynamic var
-            var url = "http://127.0.0.1:7000/api/3/action/"
+            const init_url = this.sandbox.client.endpoint;
+            var url = init_url + "/";
             //Function to create Dataset with CKAN API
             function create_dataset(dataset_name, organization_id) {
                 //Create data form to send in the request
@@ -19,7 +20,7 @@ ckan.module('form_submit', function ($) {
 
                 //ajax request to create dataset
                 $.ajax({
-                    url: url + 'package_create', // create dataset path
+                    url: url + 'api/3/action/package_create', // create dataset path
                     type: 'POST',
                     headers: {
                         "Authorization": auth
@@ -40,7 +41,7 @@ ckan.module('form_submit', function ($) {
             function create_and_insert_first_row_into_resource(dataset_name, resource_name, final_json_to_send) {
                 //ajax request to create resource
                 $.ajax({
-                    url: url + 'datastore_create', // create resource path
+                    url: url + 'api/3/action/datastore_create', // create resource path
                     type: 'POST',
                     headers: {
                         "Authorization": auth
@@ -68,7 +69,7 @@ ckan.module('form_submit', function ($) {
             function insert_new_row_into_resource(resource_id, final_json_to_send) {
                 //ajax request to insert data row into resource
                 $.ajax({
-                    url: url + 'datastore_upsert', //insert row in resource path
+                    url: url + 'api/3/action/datastore_upsert', //insert row in resource path
                     type: 'POST',
                     headers: {
                         "Authorization": auth
@@ -125,7 +126,7 @@ ckan.module('form_submit', function ($) {
                     var resource_to_use = "";
                     // Get all datasets from a specific user with his key
                     $.ajax({
-                        url: url + 'current_package_list_with_resources',
+                        url: url + 'api/3/action/current_package_list_with_resources',
                         type: 'GET',
                         headers: {
                             "Authorization": auth

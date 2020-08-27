@@ -6,7 +6,10 @@ ckan.module('actions_resource', function ($) {
             //ckan API Key
             //var api_ckan_key = "4c5e4e41-3056-41cf-9353-7b63438a7fcf";
             var api_ckan_key = "3f5c3706-ca58-4abc-bc32-6758e2509bcc";
+
             var urlParams = new URLSearchParams(window.location.search);
+            const init_url = this.sandbox.client.endpoint;
+            var url = init_url + "/";
             var dataset_id = urlParams.get('dataset-id');
             var resource_id = urlParams.get('resource-id');
             var type_quest = urlParams.get('type_quest');
@@ -23,7 +26,7 @@ ckan.module('actions_resource', function ($) {
 
             $.ajax({
                 //url: 'http://ckan.staging.ubiwhere.com/api/3/action/current_package_list_with_resources',
-                url: 'http://127.0.0.1:7000/dataset/' + dataset_id + '/resource/' + resource_id + '/download/' + type_quest,
+                url: url + 'dataset/' + dataset_id + '/resource/' + resource_id + '/download/' + type_quest,
                 type: 'GET',
                 headers: {
                     "Authorization": api_ckan_key
