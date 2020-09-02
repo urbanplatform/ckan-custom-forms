@@ -3,7 +3,7 @@
 ckan.module('list_questionnaires', function ($) {
     return {
         initialize: function () {
-            //ckan API Key
+            //ckan API Key admin
             var api_ckan_key = "3f5c3706-ca58-4abc-bc32-6758e2509bcc";
             //var api_ckan_key = "4c5e4e41-3056-41cf-9353-7b63438a7fcf";
             const init_url = this.sandbox.client.endpoint;
@@ -45,10 +45,10 @@ ckan.module('list_questionnaires', function ($) {
 
             function define_title_word_questionnaire(string_field) {
                 if (string_field != "") {
-                    if (string_field.split(" ").length > 1)
-                        return string_field.charAt(0).toUpperCase() + string_field.slice(1).split(' ')[0];
+                    if (string_field.split(".").length > 1)
+                        return string_field.charAt(0).toUpperCase() + string_field.slice(1).split('.')[0];
                     else
-                        return string_field.charAt(0).toUpperCase() + string_field.slice(1).split('_')[0];
+                        return string_field.charAt(0).toUpperCase() + string_field.slice(1).split('_');
                 }
                 else {
                     return "Unknown title";
