@@ -92,7 +92,7 @@ ckan.module('form_submit', function ($) {
             //Function on clicking to save and close questionnaire
             $("#submitForm").click(function () {
                 // Get the type of questionnaire string from the title
-                var type_quest = $("#form-title").text().toLowerCase().replace(/\s/g, '').split("-")[1]
+                var type_quest = $("#form-title").text().toLowerCase().split("-")[1].trim().split(" ").join("_")
                 // Hide div with the final state's text of the questionnaire
                 $("#finish_quest").css("display", "none");
                 // Show loader
@@ -104,10 +104,17 @@ ckan.module('form_submit', function ($) {
                     var key_id = key.split("_")[0];
                     var tmp_obj = {}
                     // Get all checked values from questionnaire tables
-                    $("#" + key + " #all_tables tbody tr").each(function (index) {
+                    $("#" + key + " #all_tables tbody tr").each(function () {
                         if ($(this).find('input[type="radio"]').is(":checked")) {
                             var row_opt = $(this).find('input[type="radio"]:checked').attr("value");
                             var key_opt = $(this).find('input[type="radio"]:checked').attr("id");
+                            tmp_obj[key_opt] = row_opt;
+                        }
+                    });
+                    $("#" + key + " #all_tables .input_text").each(function () {
+                        if ($(this).find('textarea').val() != "") {
+                            var row_opt = $(this).find('textarea').val();
+                            var key_opt = $(this).find('textarea').attr("id");
                             tmp_obj[key_opt] = row_opt;
                         }
                     });
@@ -116,14 +123,14 @@ ckan.module('form_submit', function ($) {
 
                 var resource_id = "";
                 setTimeout(function () {
-                    $("#loader").css("display", "none");
                     // TODO Change this to custom field and get it in the beginning
-                    var dataset_name = "";
+                    let dataset_name = "";
                     //var resource_name = ["caregivers", "health_professionals", "patients"]; //env var
                     let organization_id = "";
                     let dataset_exists = false;
                     let resource_exists = false;
-                    var resource_to_use = "";
+                    let resource_to_use = "";
+
                     // Get all datasets from a specific user with his key
                     $.ajax({
                         url: url + 'api/3/action/current_package_list_with_resources',
@@ -170,6 +177,7 @@ ckan.module('form_submit', function ($) {
                             // In case of dataset of resource doenst exists create them
                             if (!dataset_exists) {
                                 //Create dataset
+                                dataset_name = "Survey Content Automatic - " + organization_id;
                                 create_dataset(dataset_name, organization_id);
                                 //Create new resource and insert into it
                                 create_and_insert_first_row_into_resource(dataset_name, type_quest, final_json_to_send);

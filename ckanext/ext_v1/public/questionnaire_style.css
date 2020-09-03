@@ -55,6 +55,14 @@ input {
     margin-top: 24px;
 }
 
+.input_text{
+    padding: 16px 0 16px 0;
+    border: 1px solid;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    margin-bottom: 24px;
+}
+
 @media only screen and (max-width: 767px) {
     .side-dataset{
         margin-top: 0 !important;
