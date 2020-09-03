@@ -272,7 +272,7 @@ ckan.module('actions_resource', function ($) {
                 $("#accordion").css("display", "none");
                 $("#second_stage").removeClass("uncomplete");
                 $("#second_stage").addClass("active");
-                if (num_modules == 1)
+                if (num_modules <= 2)
                     $("#finalize_quest").css("display", "inline-block");
                 else
                     $("#next_quest").css("display", "inline-block");
@@ -285,12 +285,22 @@ ckan.module('actions_resource', function ($) {
             $("#next_quest").on("click", function () {
                 let all_fill = true;
                 //Verify if this module its totally filled
-                $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default').each(function (index) {
-                    if ((!$(this).find('tbody tr input[type="radio"]').is(":checked") && $(this).find('tbody th .row').text().slice(-1) == "*") || (($(this).find('.input_text textarea').val() == "") && ($(this).find('.input_text label').text().slice(-1) == "*"))) {
-                        all_fill = false;
-                        return all_fill;
-                    }
-                });
+                if ($('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody').length > 0) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody ').each(function () {
+                        if ((!$(this).find('tr input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
+                            all_fill = false;
+                            return all_fill;
+                        }
+                    });
+                }
+                if (all_fill && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text').length > 0) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text ').each(function () {
+                        if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
+                            all_fill = false;
+                            return all_fill;
+                        }
+                    });
+                }
                 //If module is totally filled
                 if (all_fill) {
                     $("#" + divs_modules[(count_clicks)] + "_quest").css("display", "none");
@@ -321,13 +331,13 @@ ckan.module('actions_resource', function ($) {
                 //Verify if this module its totally filled
                 if ($('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody').length > 0) {
                     $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody ').each(function () {
-                        if ((!$(this).find('tr input[type="radio"]').is(":checked")) && ($(this).find('th .row').text().slice(-1) == "*")) {
+                        if ((!$(this).find('tr input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
                             all_fill = false;
                             return all_fill;
                         }
                     });
                 }
-                if ($('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text').length > 0) {
+                if (all_fill && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text').length > 0) {
                     $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text ').each(function () {
                         if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
                             all_fill = false;
