@@ -3,10 +3,6 @@
 ckan.module('actions_resource', function ($) {
     return {
         initialize: function () {
-            //ckan API Key
-            //var api_ckan_key = "4c5e4e41-3056-41cf-9353-7b63438a7fcf";
-            var api_ckan_key = "3f5c3706-ca58-4abc-bc32-6758e2509bcc";
-
             var urlParams = new URLSearchParams(window.location.search);
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
@@ -16,6 +12,19 @@ ckan.module('actions_resource', function ($) {
             let count_clicks = 0;
             let num_modules = 0;
             let divs_modules = [];
+            //get ckan API Key
+            var api_ckan_key = "";
+            $.ajax({
+                url: url + 'api/3/action/get_key',
+                type: 'GET',
+                success: function (data) {
+                    api_ckan_key = data.result["admin_key"];
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+
             function translate_num(num) {
                 if (num == 2)
                     return "second";
