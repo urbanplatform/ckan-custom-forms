@@ -3,13 +3,23 @@
 ckan.module('form_submit', function ($) {
     return {
         initialize: function () {
-            //CKAN API KEY of admin user
-            // TODO How to change this to dynamic var
-            var auth = "3f5c3706-ca58-4abc-bc32-6758e2509bcc";
             // CKAN URL + API init
-            // TODO How to change this to dynamic var
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
+
+            //CKAN API KEY of admin user
+            var api_ckan_key = "";
+            $.ajax({
+                url: url + 'api/3/action/get_key',
+                type: 'GET',
+                success: function (data) {
+                    api_ckan_key = data.result["admin_key"];
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+
             //Function to create Dataset with CKAN API
             function create_dataset(dataset_name, organization_id) {
                 //Create data form to send in the request
@@ -23,7 +33,7 @@ ckan.module('form_submit', function ($) {
                     url: url + 'api/3/action/package_create', // create dataset path
                     type: 'POST',
                     headers: {
-                        "Authorization": auth
+                        "Authorization": api_ckan_key
                     },
                     data: formData,
                     processData: false, //prevent jquery from automatically transform data into query string
@@ -44,7 +54,7 @@ ckan.module('form_submit', function ($) {
                     url: url + 'api/3/action/datastore_create', // create resource path
                     type: 'POST',
                     headers: {
-                        "Authorization": auth
+                        "Authorization": api_ckan_key
                     },
                     data: JSON.stringify({
                         "resource": {
@@ -72,7 +82,7 @@ ckan.module('form_submit', function ($) {
                     url: url + 'api/3/action/datastore_upsert', //insert row in resource path
                     type: 'POST',
                     headers: {
-                        "Authorization": auth
+                        "Authorization": api_ckan_key
                     },
                     data: JSON.stringify({
                         "resource_id": resource_id,
@@ -136,7 +146,7 @@ ckan.module('form_submit', function ($) {
                         url: url + 'api/3/action/current_package_list_with_resources',
                         type: 'GET',
                         headers: {
-                            "Authorization": auth
+                            "Authorization": api_ckan_key
                         },
                         success: function (data) {
                             for (var i = 0; i < data.result.length; i++) {
