@@ -295,8 +295,8 @@ ckan.module('actions_resource', function ($) {
                 let all_fill = true;
                 //Verify if this module its totally filled
                 if ($('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody ').each(function () {
-                        if ((!$(this).find('tr input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody tr').each(function () {
+                        if ((!$(this).find('input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
                             all_fill = false;
                             return all_fill;
                         }
@@ -339,8 +339,8 @@ ckan.module('actions_resource', function ($) {
                 let all_fill = true;
                 //Verify if this module its totally filled
                 if ($('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody ').each(function () {
-                        if ((!$(this).find('tr input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody tr').each(function () {
+                        if ((!$(this).find('input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
                             all_fill = false;
                             return all_fill;
                         }

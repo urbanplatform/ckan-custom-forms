@@ -1,0 +1,599 @@
+{
+ "pages": [
+  {
+   "name": "Init",
+   "elements": [
+    {
+     "type": "comment",
+     "name": "comment zarit",
+     "title": "TeNDER User Experience",
+     "hideNumber": true,
+     "defaultValue": "something to describe the type of questionnaire"
+    },
+    {
+     "type": "comment",
+     "name": "comment tender",
+     "title": "Mix Experience",
+     "hideNumber": true,
+     "defaultValue": "something to describe the type of questionnaire"
+    }
+   ],
+   "title": "New Questionnaire",
+   "description": "The follow questionnaire it consists on several questions in order to collect specific information that enables us to design and structure more concise guidelines. Please answer to all the questions with serenity and truthfulness."
+  },
+  {
+   "name": "TeNDER User Experience",
+   "elements": [
+    {
+     "type": "panel",
+     "name": "Perceived QOL",
+     "elements": [
+      {
+       "type": "radiogroup",
+       "name": "question22",
+       "title": "How would you rate your quality of life?\t",
+       "choices": [
+        {
+         "value": "very_poor",
+         "text": "Very poor\t"
+        },
+        {
+         "value": "poor",
+         "text": "Poor"
+        },
+        {
+         "value": "normal",
+         "text": "Normal"
+        },
+        {
+         "value": "good",
+         "text": "Good"
+        },
+        {
+         "value": "excellent",
+         "text": "Excellent"
+        }
+       ],
+       "otherText": "Excellent"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question23",
+       "title": "How often do you feel calm and relaxed with TeNDER?\t",
+       "choices": [
+        {
+         "value": "never",
+         "text": "Never"
+        },
+        {
+         "value": "rarely",
+         "text": "Rarely"
+        },
+        {
+         "value": "sometimes",
+         "text": "Sometimes"
+        },
+        {
+         "value": "often",
+         "text": "Often"
+        },
+        {
+         "value": "always",
+         "text": "Always"
+        }
+       ],
+       "otherText": "Always"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question24",
+       "title": "How do you feel when you are not with the patient with TeNDER?\t",
+       "choices": [
+        {
+         "value": "very_insecure",
+         "text": "Very insecure\t"
+        },
+        {
+         "value": "insecure",
+         "text": "Insecure"
+        },
+        {
+         "value": "a_little_insecure",
+         "text": "A little insecure\t"
+        },
+        {
+         "value": "safe",
+         "text": "Safe"
+        },
+        {
+         "value": "very_safe",
+         "text": "Very safe"
+        }
+       ],
+       "otherText": "Very safe"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question25",
+       "title": "How often do you check for his/her needs with TeNDER?\t",
+       "choices": [
+        {
+         "value": "always",
+         "text": "Always"
+        },
+        {
+         "value": "often",
+         "text": "Often"
+        },
+        {
+         "value": "sometimes",
+         "text": "Sometimes"
+        },
+        {
+         "value": "rarely",
+         "text": "Rarely"
+        },
+        {
+         "value": "never",
+         "text": "Never"
+        }
+       ],
+       "otherText": "Never"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question26",
+       "title": "How often do you need to visit the person you take care for with TeNDER?\t",
+       "choices": [
+        {
+         "value": "always",
+         "text": "Always"
+        },
+        {
+         "value": "often",
+         "text": "Often"
+        },
+        {
+         "value": "sometimes",
+         "text": "Sometimes"
+        },
+        {
+         "value": "rarely",
+         "text": "Rarely"
+        },
+        {
+         "value": "never",
+         "text": "Never"
+        }
+       ],
+       "hasOther": true,
+       "otherText": "Never"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question27",
+       "title": "How would you rate your physical status?\t",
+       "choices": [
+        {
+         "value": "very_poor",
+         "text": "Very poor\t"
+        },
+        {
+         "value": "poor",
+         "text": "Poor"
+        },
+        {
+         "value": "normal",
+         "text": "Normal"
+        },
+        {
+         "value": "good",
+         "text": "Good"
+        },
+        {
+         "value": "excellent",
+         "text": "Excellent"
+        }
+       ],
+       "otherText": "Excellent"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question28",
+       "title": "How would you rate your physical status?\t",
+       "choices": [
+        {
+         "value": "very_poor",
+         "text": "Very poor\t"
+        },
+        {
+         "value": "poor",
+         "text": "Poor"
+        },
+        {
+         "value": "normal",
+         "text": "Normal"
+        },
+        {
+         "value": "good",
+         "text": "Good"
+        },
+        {
+         "value": "excellent",
+         "text": "Excellent"
+        }
+       ],
+       "otherText": "Excellent"
+      }
+     ],
+     "title": "Perceived QOL"
+    },
+    {
+     "type": "panel",
+     "name": "Satisfaction about the Care of the Patient",
+     "elements": [
+      {
+       "type": "radiogroup",
+       "name": "question29",
+       "title": "How do you feel about his/her care, using TeNDER system?\t",
+       "choices": [
+        {
+         "value": "very_poor",
+         "text": "Very poor\t"
+        },
+        {
+         "value": "poor",
+         "text": "Poor"
+        },
+        {
+         "value": "normal",
+         "text": "Normal"
+        },
+        {
+         "value": "good",
+         "text": "Good"
+        },
+        {
+         "value": "excellent",
+         "text": "Excellent"
+        }
+       ]
+      }
+     ],
+     "title": "Satisfaction about the Care of the Patient"
+    },
+    {
+     "type": "panel",
+     "name": "TeNDER Satisfaction Rate",
+     "elements": [
+      {
+       "type": "radiogroup",
+       "name": "question30",
+       "title": "How satisfied are you with Tender system?\t",
+       "choices": [
+        {
+         "value": "very_poor",
+         "text": "Very poor\t"
+        },
+        {
+         "value": "poor",
+         "text": "Poor"
+        },
+        {
+         "value": "normal",
+         "text": "Normal"
+        },
+        {
+         "value": "good",
+         "text": "Good"
+        },
+        {
+         "value": "excellent",
+         "text": "Excellent"
+        }
+       ]
+      },
+      {
+       "type": "radiogroup",
+       "name": "question31",
+       "title": "Rate your experience with Tender system.\t",
+       "choices": [
+        {
+         "value": "never",
+         "text": "Never"
+        },
+        {
+         "value": "rarely",
+         "text": "Rarely"
+        },
+        {
+         "value": "sometimes",
+         "text": "Sometimes"
+        },
+        {
+         "value": "often",
+         "text": "Often"
+        },
+        {
+         "value": "always",
+         "text": "Always"
+        }
+       ]
+      },
+      {
+       "type": "radiogroup",
+       "name": "question32",
+       "title": "How satisfied are you with daily reports about activities and progress of the patient?\t",
+       "choices": [
+        {
+         "value": "very_insecure",
+         "text": "Very insecure\t"
+        },
+        {
+         "value": "insecure",
+         "text": "Insecure"
+        },
+        {
+         "value": "a_little_insecure",
+         "text": "A little insecure\t"
+        },
+        {
+         "value": "safe",
+         "text": "Safe"
+        },
+        {
+         "value": "very_safe",
+         "text": "Very safe"
+        }
+       ]
+      }
+     ],
+     "title": "TeNDER Satisfaction Rate"
+    },
+    {
+     "type": "panel",
+     "name": "Modular Set Function",
+     "elements": [
+      {
+       "type": "radiogroup",
+       "name": "question33",
+       "title": "Does this function increase your perceived quality of life?\t",
+       "description": "Ambient Monitoring",
+       "choices": [
+        {
+         "value": "very_poor",
+         "text": "Very poor\t"
+        },
+        {
+         "value": "poor",
+         "text": "Poor"
+        },
+        {
+         "value": "normal",
+         "text": "Normal"
+        },
+        {
+         "value": "good",
+         "text": "Good"
+        },
+        {
+         "value": "excellent",
+         "text": "Excellent"
+        }
+       ],
+       "otherText": "Excellent"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question34",
+       "title": "How often does he/she forget to turn off appliances, such as light, oven or water?",
+       "description": "Ambient Monitoring",
+       "choices": [
+        {
+         "value": "never",
+         "text": "Never"
+        },
+        {
+         "value": "rarely",
+         "text": "Rarely"
+        },
+        {
+         "value": "sometimes",
+         "text": "Sometimes"
+        },
+        {
+         "value": "often",
+         "text": "Often"
+        },
+        {
+         "value": "always",
+         "text": "Always"
+        }
+       ],
+       "otherText": "Always"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question35",
+       "title": "How satisfied are you with “Ambient Monitoring” function?",
+       "description": "Ambient Monitoring",
+       "choices": [
+        {
+         "value": "never",
+         "text": "Never"
+        },
+        {
+         "value": "rarely",
+         "text": "Rarely"
+        },
+        {
+         "value": "sometimes",
+         "text": "Sometimes"
+        },
+        {
+         "value": "often",
+         "text": "Often"
+        },
+        {
+         "value": "always",
+         "text": "Always"
+        }
+       ],
+       "otherText": "Always"
+      },
+      {
+       "type": "radiogroup",
+       "name": "question36",
+       "title": "Does this function increase your perceived quality of life?",
+       "description": "Drug Adherence",
+       "choices": [
+        {
+         "value": "never",
+         "text": "Never"
+        },
+        {
+         "value": "rarely",
+         "text": "Rarely"
+        },
+        {
+         "value": "sometimes",
+         "text": "Sometimes"
+        },
+        {
+         "value": "often",
+         "text": "Often"
+        },
+        {
+         "value": "always",
+         "text": "Always"
+        }
+       ],
+       "otherText": "Always"
+      }
+     ],
+     "title": "Modular Set Function"
+    }
+   ],
+   "title": "TeNDER User Experience",
+   "description": "Answer to the following questions with serenity"
+  },
+  {
+   "name": "Test Experience",
+   "elements": [
+    {
+     "type": "panel",
+     "name": "Experience A",
+     "elements": [
+      {
+       "type": "radiogroup",
+       "name": "question37",
+       "title": "This experience changed your lifestyle?",
+       "isRequired": true,
+       "choices": [
+        {
+         "value": "yes",
+         "text": "Yes"
+        },
+        {
+         "value": "no",
+         "text": "No"
+        },
+        {
+         "value": "i_dont_know",
+         "text": "I don't know"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "name": "question38",
+       "title": "What would you changed in this experience?",
+       "isRequired": true,
+       "placeHolder": "I would change..."
+      },
+      {
+       "type": "radiogroup",
+       "name": "question39",
+       "title": "Would you recommend this experience to your friends?",
+       "isRequired": true,
+       "choices": [
+        {
+         "value": "yes",
+         "text": "Yes"
+        },
+        {
+         "value": "no",
+         "text": "No"
+        },
+        {
+         "value": "maybe",
+         "text": "Maybe"
+        }
+       ]
+      }
+     ],
+     "title": "Experience A",
+     "description": "LOrum epsum epsum lorum"
+    },
+    {
+     "type": "panel",
+     "name": "Experience B",
+     "elements": [
+      {
+       "type": "radiogroup",
+       "name": "question40",
+       "title": "In this experience, did you notice any strong emotions?",
+       "description": "Emotions",
+       "isRequired": true,
+       "choices": [
+        {
+         "value": "yes",
+         "text": "Yes"
+        },
+        {
+         "value": "no",
+         "text": "No"
+        },
+        {
+         "value": "maybe",
+         "text": "Maybe"
+        }
+       ]
+      },
+      {
+       "type": "radiogroup",
+       "name": "question41",
+       "title": "Would you implement the routines tested in this experience?",
+       "description": "Routines",
+       "isRequired": true,
+       "choices": [
+        {
+         "value": "yes",
+         "text": "Yes"
+        },
+        {
+         "value": "no",
+         "text": "No"
+        },
+        {
+         "value": "maybe",
+         "text": "Maybe"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "name": "question 42",
+       "title": "Give a feedback about this experience please.",
+       "isRequired": true
+      }
+     ],
+     "title": "Experience B",
+     "description": "LOrum epsum epsum lorum"
+    }
+   ],
+   "title": "Test Experience",
+   "description": "Answer to the following questions with serenity"
+  }
+ ]
+}
