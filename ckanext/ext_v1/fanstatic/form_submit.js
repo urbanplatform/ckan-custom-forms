@@ -19,15 +19,16 @@ ckan.module('form_submit', function ($) {
                     console.log(data);
                 }
             });
-
             //Function to create Dataset with CKAN API
-            function create_dataset(dataset_name, organization_id) {
+            function create_dataset_and_store_resource(dataset_name, organization_id, type_quest, final_json_to_send) {
                 //Create data form to send in the request
-                var formData = new FormData();
-                formData.append("name", dataset_name);
-                formData.append("owner_org", organization_id);
-                formData.append("private", true);
-
+                var dataset_id = dataset_name.split(" ").join("-").toLowerCase();
+                let json_data = {};
+                json_data["title"] = dataset_name;
+                json_data["name"] = dataset_id;
+                json_data["owner_org"] = organization_id;
+                json_data["private"] = "true";
+                json_data["extras"] = [{ "key": "is_data_store", "value": "true" }];
                 //ajax request to create dataset
                 $.ajax({
                     url: url + 'api/3/action/package_create', // create dataset path
@@ -35,16 +36,19 @@ ckan.module('form_submit', function ($) {
                     headers: {
                         "Authorization": api_ckan_key
                     },
-                    data: formData,
-                    processData: false, //prevent jquery from automatically transform data into query string
-                    contentType: false, //is imperative since jquery set it incorrectly
+                    data: JSON.stringify(json_data),
+                    dataType: "json",
+                    contentType: 'application/json; charset=utf-8',
                     success: function (data) {
                         console.log(data.result);
+                        //Create new resource and insert into it
+                        create_and_insert_first_row_into_resource(dataset_id, type_quest, final_json_to_send);
                     },
-                    error: function (data) {
-                        console.log(data);
+                    error: function (ts) {
+                        console.log(ts.responseText);
                     }
                 });
+                return dataset_id;
             }
 
             //Function to insert table into resource and first row with Datastore API
@@ -69,8 +73,8 @@ ckan.module('form_submit', function ($) {
                         console.log('ok');
                         console.log(data.result);
                     },
-                    error: function (data) {
-                        console.log(data);
+                    error: function (ts) {
+                        console.log(ts.responseText);
                     }
                 });
             }
@@ -112,31 +116,45 @@ ckan.module('form_submit', function ($) {
                 $('#quest_content_form > div').each(function () {
                     var key = this.id;
                     var key_id = key.split("_")[0];
-                    var tmp_obj = {}
+                    var tmp_obj = [];
+                    let questions_entity = [];
                     // Get all checked values from questionnaire tables
                     $("#" + key + " #all_tables tbody tr").each(function () {
                         if ($(this).find('input[type="radio"]').is(":checked")) {
+                            // Get question
+                            var row_question = $(this).find('th').text().replace('\t', '');
+                            // Get answer
                             var row_opt = $(this).find('input[type="radio"]:checked').attr("value");
+                            // Get id row
                             var key_opt = $(this).find('input[type="radio"]:checked').attr("id");
-                            tmp_obj[key_opt] = row_opt;
+                            // Define data structure of questions/answers
+                            questions_entity.push({ 'id': key_opt, 'question': row_question, 'answer': row_opt });
                         }
+
                     });
                     $("#" + key + " #all_tables .input_text").each(function () {
                         if ($(this).find('textarea').val() != "") {
+                            // Get question
+                            var row_question = $(this).find('label').text().replace('\t', '');
+                            // Get answer
                             var row_opt = $(this).find('textarea').val();
+                            // Get id row
                             var key_opt = $(this).find('textarea').attr("id");
-                            tmp_obj[key_opt] = row_opt;
+                            // Define data structure of questions/answers
+                            questions_entity.push({ 'id': key_opt, 'question': row_question, 'answer': row_opt });
                         }
                     });
+                    if (questions_entity.length > 0)
+                        tmp_obj.push({ 'entity': key, 'questions': questions_entity });
+
                     overall_obj[key_id] = tmp_obj;
                 });
 
                 var resource_id = "";
                 setTimeout(function () {
-                    // TODO Change this to custom field and get it in the beginning
                     let dataset_name = "";
-                    //var resource_name = ["caregivers", "health_professionals", "patients"]; //env var
                     let organization_id = "";
+                    let organization_name = "";
                     let dataset_exists = false;
                     let resource_exists = false;
                     let resource_to_use = "";
@@ -154,6 +172,8 @@ ckan.module('form_submit', function ($) {
                                 if (organization_id == "") {
                                     if (data.result[i]["owner_org"] && data.result[i]["owner_org"] != "") {
                                         organization_id = data.result[i]["owner_org"];
+                                        organization_name = data.result[i]["organization"]["name"]
+
                                     }
                                 }
                                 if (dataset_name == "") {
@@ -183,14 +203,13 @@ ckan.module('form_submit', function ($) {
                             }
 
                             //Final json structure to send to rabbit
-                            var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "records": overall_obj };
-                            // In case of dataset of resource doenst exists create them
+                            var currentdate = new Date();
+                            var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "records": overall_obj, "date_submitted": currentdate };
+                            // In case of data_store dataset doenst exists create them
                             if (!dataset_exists) {
                                 //Create dataset
-                                dataset_name = "Survey Content Automatic - " + organization_id;
-                                create_dataset(dataset_name, organization_id);
-                                //Create new resource and insert into it
-                                create_and_insert_first_row_into_resource(dataset_name, type_quest, final_json_to_send);
+                                dataset_name = "Questionnaires Data from " + organization_name;
+                                create_dataset_and_store_resource(dataset_name, organization_id, type_quest, final_json_to_send);
                             }
                             else if (!resource_exists) {
                                 //Create new resource and insert into it
