@@ -122,7 +122,7 @@ ckan.module('form_submit', function ($) {
                     $("#" + key + " #all_tables tbody tr").each(function () {
                         if ($(this).find('input[type="radio"]').is(":checked")) {
                             // Get question
-                            var row_question = $(this).find('th').text().replace('\t', '');
+                            var row_question = $(this).find('th').text().replace('\t', '').replace('*', '');
                             // Get answer
                             var row_opt = $(this).find('input[type="radio"]:checked').attr("value");
                             // Get id row
@@ -135,7 +135,7 @@ ckan.module('form_submit', function ($) {
                     $("#" + key + " #all_tables .input_text").each(function () {
                         if ($(this).find('textarea').val() != "") {
                             // Get question
-                            var row_question = $(this).find('label').text().replace('\t', '');
+                            var row_question = $(this).find('label').text().replace('\t', '').replace('*', '');
                             // Get answer
                             var row_opt = $(this).find('textarea').val();
                             // Get id row
