@@ -41,8 +41,9 @@ ckan.module('form_submit', function ($) {
                     contentType: 'application/json; charset=utf-8',
                     success: function (data) {
                         console.log(data.result);
+                        var first = true;
                         //Create new resource and insert into it
-                        create_and_insert_first_row_into_resource(dataset_id, type_quest, final_json_to_send, tmp_obj);
+                        create_and_insert_first_row_into_resource(dataset_id, type_quest, final_json_to_send, tmp_obj, first);
                     },
                     error: function (ts) {
                         console.log(ts.responseText);
@@ -52,10 +53,22 @@ ckan.module('form_submit', function ($) {
             }
 
             //Function to insert table into resource and first row with Datastore API
-            function create_and_insert_first_row_into_resource(dataset_name, resource_name, final_json_to_send, tmp_obj) {
+            function create_and_insert_first_row_into_resource(dataset_name, resource_name, final_json_to_send, tmp_obj, is_first = false) {
                 //Get types and consequent questions/answer keys
                 var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
-                tmp_obj.map((x => { fiels_resource.push({ "id": x }) }));
+                tmp_obj.map((x => {
+                    fiels_resource.push({ "id": x });
+                    console.log(x);
+                    console.log(final_json_to_send);
+                    console.log(is_first);
+                    console.log(final_json_to_send.hasOwnProperty(x));
+                    if (is_first == true)
+                        if (!final_json_to_send.hasOwnProperty(x)) {
+                            console.log("ww");
+                            final_json_to_send[x] = "";
+                        }
+
+                }));
                 //ajax request to create resource
                 $.ajax({
                     url: url + 'api/3/action/datastore_create', // create resource path
@@ -67,7 +80,7 @@ ckan.module('form_submit', function ($) {
                         "resource": {
                             "package_id": dataset_name,
                             "name": resource_name,
-                            "format": "csv"
+                            "format": "json"
                         },
                         "force": true,
                         "fields": fiels_resource,
@@ -214,14 +227,12 @@ ckan.module('form_submit', function ($) {
 
                             //Final json structure to send to rabbit
                             var currentdate = new Date();
-                            console.log(questions_entity[0]);
                             var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate };
                             questions_entity.forEach(x => {
                                 for (const [key, value] of Object.entries(x)) {
                                     final_json_to_send[key] = value
                                 }
                             });
-                            console.log(final_json_to_send);
                             //var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "records": questions_entity, "date_submitted": currentdate };
                             // In case of data_store dataset doenst exists create them
                             if (!dataset_exists) {
@@ -230,8 +241,9 @@ ckan.module('form_submit', function ($) {
                                 create_dataset_and_store_resource(dataset_name, organization_id, type_quest, final_json_to_send, tmp_obj);
                             }
                             else if (!resource_exists) {
+                                var is_first = true
                                 //Create new resource and insert into it
-                                create_and_insert_first_row_into_resource(dataset_name, type_quest, final_json_to_send, tmp_obj);
+                                create_and_insert_first_row_into_resource(dataset_name, type_quest, final_json_to_send, tmp_obj, is_first);
                             }
                             else {
                                 //Insert into resource
