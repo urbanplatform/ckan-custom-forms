@@ -29,28 +29,15 @@ def custom_action():
 
 @toolkit.side_effect_free
 def get_key(context, data_dict=None):
-    # The actual custom API method
-    admin_info = templating_resources()
-
-    if "apikey" in admin_info:
-        key = admin_info["apikey"]
-    else:
-        key = ""
-
-    return {"admin_key": key}
-
-
-def templating_resources():
     """
-    Return all the resources that are for templating
+    Method to get the apikey from logged user
     """
-    user = toolkit.get_action("user_list")(
-        data_dict={"q": os.environ.get("CKAN_SYSADMIN_NAME", "")}
-    )
-    user_id = user[0]["id"]
-
-    user_admin = toolkit.get_action("user_show")(data_dict={"id": user_id})
-    return user_admin
+    users = toolkit.get_action("user_list")(data_dict={})
+    for user in users:
+        user_id = user["id"]
+        user_admin = toolkit.get_action("user_show")(data_dict={"id": user_id})
+        if "apikey" in user_admin:
+            return {"admin_key": user_admin["apikey"]}
 
 
 class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
