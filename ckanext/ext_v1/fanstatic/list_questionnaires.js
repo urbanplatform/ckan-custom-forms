@@ -1,3 +1,7 @@
+/*
+This file is responsible for manage the all the questionnaires listed in main page
+as well the organization section, that can only been seen by admins
+*/
 "use strict";
 
 ckan.module('list_questionnaires', function ($) {
@@ -6,8 +10,6 @@ ckan.module('list_questionnaires', function ($) {
             //Get path of url to know the type of the questionnaire
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
-            //ckan API Key admin
-            var api_ckan_key = "";
 
             function getCookie(cname) {
                 var name = cname + "=";
@@ -28,23 +30,28 @@ ckan.module('list_questionnaires', function ($) {
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
                 success: function (data) {
-                    api_ckan_key = data.result["admin_key"];
                     var is_user = getCookie("ckan");
                     if (is_user) {
+                        var user = data.result["user_logged"];
+                        // if (user["sysadmin"] == true) {
+                        //     $("#organization-datasets").css("display", "block");
+                        // }
                         //Call questionnaires from specific dataset on staging
                         $.ajax({
-                            //url: 'http://ckan.staging.ubiwhere.com/api/3/action/current_package_list_with_resources',
                             url: url + 'api/3/action/current_package_list_with_resources',
                             type: 'GET',
-                            // headers: {
-                            //     "Authorization": api_ckan_key
-                            // },
+                            headers: {
+                                "Authorization": user["apikey"]
+                            },
                             success: function (data) {
-                                console.log(data.result);
                                 data.result.forEach(function (dataset) {
+                                    if (dataset.creator_user_id == user["id"]) {
+                                        $("#organization-datasets").css("display", "block");
+                                    }
                                     if ("extras" in dataset) {
                                         dataset.extras.forEach(function (extra) {
-                                            if (extra["key"] == "is_templating" && extra["value"] == "true") {
+                                            if ((extra["key"] == "is_templating" && extra["value"] == "true") && (dataset.resources.length > 0)) {
+
                                                 dataset.resources.forEach(function (resource) {
                                                     var json_info = {
                                                         "name": resource.name,
@@ -53,6 +60,9 @@ ckan.module('list_questionnaires', function ($) {
                                                     };
                                                     populate_list_html(dataset.id, json_info);
                                                 });
+                                            }
+                                            else {
+                                                $("#list-quests").append("There are no questionnaires available. Please try again later");
                                             }
                                         });
                                     }
@@ -110,8 +120,10 @@ ckan.module('list_questionnaires', function ($) {
                         }
                     }
                     else {
+                        $("#organization-datasets").css("display", "none");
                         $("#quest_section_init page-heading").text("List of questionnaires");
                         $("#list-quests").append("Please log in to get access to the questionnaires");
+
                     }
 
                 },
