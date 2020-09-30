@@ -18,7 +18,7 @@ ckan.module('actions_resource', function ($) {
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
                 success: function (data) {
-                    api_ckan_key = data.result["admin_key"];
+                    api_ckan_key = data.result["user_logged"]["apikey"];
                 },
                 error: function (data) {
                     console.log(data);

@@ -35,9 +35,9 @@ def get_key(context, data_dict=None):
     users = toolkit.get_action("user_list")(data_dict={})
     for user in users:
         user_id = user["id"]
-        user_admin = toolkit.get_action("user_show")(data_dict={"id": user_id})
-        if "apikey" in user_admin:
-            return {"admin_key": user_admin["apikey"]}
+        user_logged = toolkit.get_action("user_show")(data_dict={"id": user_id})
+        if "apikey" in user_logged:
+            return {"user_logged": user_logged}
 
 
 class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
