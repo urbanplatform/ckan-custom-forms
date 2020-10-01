@@ -37,6 +37,7 @@ ckan.module('list_questionnaires', function ($) {
                         //     $("#organization-datasets").css("display", "block");
                         // }
                         //Call questionnaires from specific dataset on staging
+                        let has_quests = false;
                         $.ajax({
                             url: url + 'api/3/action/current_package_list_with_resources',
                             type: 'GET',
@@ -48,26 +49,27 @@ ckan.module('list_questionnaires', function ($) {
                                     if (dataset.creator_user_id == user["id"]) {
                                         $("#organization-datasets").css("display", "block");
                                     }
-                                    if ("extras" in dataset) {
+                                    if (("extras" in dataset) && (dataset["extras"].length > 0)) {
                                         dataset.extras.forEach(function (extra) {
                                             if ((extra["key"] == "is_templating" && extra["value"] == "true") && (dataset.resources.length > 0)) {
-
+                                                define_subtitle(dataset);
+                                                has_quests = true;
                                                 dataset.resources.forEach(function (resource) {
                                                     var json_info = {
                                                         "name": resource.name,
                                                         "description": resource.description,
                                                         "id": resource.id
                                                     };
-                                                    populate_list_html(dataset.id, json_info);
+                                                    populate_list_html(dataset.id, json_info, dataset.name);
                                                 });
-                                            }
-                                            else {
-                                                $("#list-quests").append("There are no questionnaires available. Please try again later");
                                             }
                                         });
                                     }
 
                                 });
+                                if (!has_quests) {
+                                    $("#list-quests").append("There are no questionnaires available. Please try again later");
+                                }
                             },
                             error: function (data) {
                                 console.log(data);
@@ -100,11 +102,19 @@ ckan.module('list_questionnaires', function ($) {
                             return list_potential_colors[Math.floor(Math.random() * list_potential_colors.length)];
                         }
 
+                        function define_subtitle(dataset) {
+                            $("#list-quests").append("\
+                            <div style=\" border-bottom: 1px solid grey; \">\
+                            <h2>"+ dataset.title + "</h2>\
+                            <div id=\""+ dataset.name + "\"></div>\
+                            </div>");
+                        }
+
                         //Populate div with all available questionnaires 
-                        function populate_list_html(dataset_id, json_info) {
+                        function populate_list_html(dataset_id, json_info, dataset_name) {
                             var title = define_title_word_questionnaire(json_info.name);
                             var description_quest = define_description_questionnaire(json_info.description);
-                            $("#list-quests").append("\
+                            $("#" + dataset_name + "").append("\
                             <li class=\"dataset-item module-content\">\
                                 <div class=\"dataset-content\">\
                                     <h3 class=\"dataset-heading\">\
