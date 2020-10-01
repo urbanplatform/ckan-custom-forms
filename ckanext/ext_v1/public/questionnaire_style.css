@@ -68,3 +68,8 @@ input {
         margin-top: 0 !important;
     }
 }
+
+.dataset-list{
+    max-height: 35vh;
+    overflow-y: auto;
+}

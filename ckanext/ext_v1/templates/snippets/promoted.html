@@ -1,13 +1,14 @@
 {% set intro = g.site_intro_text %}
 
 {% resource 'ext_v1/list_questionnaires.js' %}
-
-<div id="quest_section_init" class="module-content box">
+<link rel="stylesheet" href="/questionnaire_style.css" />
+<div id="quest_section_init" class="module-content box" style="min-height: 25vh;">
     <header>
         {% if intro %}
         {{ h.render_markdown(intro) }}
         {% else %}
-        <h1 class="page-heading">{{ _("Questionnaires for the evaluation of QOL") }}</h1>
+        <!-- <h1 class="page-heading">{{ _("Questionnaires for the evaluation of QOL") }}</h1> -->
+        <h1 class="page-heading">{{ _("List of Questionnaires Available") }}</h1>
         {% endif %}
     </header>
     <section class="group-list module module-narrow module-shallow">
