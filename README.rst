@@ -61,6 +61,7 @@ Datasets with this extra field will allow you to store data received for filling
 *Note: all questions and consequent response are stored*
 
 .. image:: ckanext/ext_v1/public/data_store.png
+    :width: 400 px
     :alt: Record from *is_data_store* dataset
 
 **is_patient_store**
@@ -77,6 +78,7 @@ The follow image presents an example of a structure associated with a resource o
 *Note: You can choose which datasets are private or public to the organization or all platform.*
 
 .. image:: ckanext/ext_v1/public/quests.png
+    :width: 400 px
     :alt: Record from *is_templating* dataset
 
 Finnally, having at least one dataset for templating (is_templating),
@@ -84,6 +86,7 @@ all existing resources are presented on the main page from which they can be ope
 In the image below, is possible to see a list of questionnaires ready for being filled.
 
 .. image:: ckanext/ext_v1/public/list_quests.png
+    :width: 400 px
     :alt: Record from *is_templating* dataset
 
 ------------
