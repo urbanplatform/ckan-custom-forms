@@ -20,6 +20,7 @@ ckan.module('form_submit', function ($) {
                 }
             });
             //Function to create Dataset with CKAN API
+            //Not used but kept it for future work
             function create_dataset_and_store_resource(dataset_name, organization_id, type_quest, final_json_to_send, tmp_obj) {
                 //Create data form to send in the request
                 var dataset_id = dataset_name.split(" ").join("-").toLowerCase();
@@ -53,18 +54,14 @@ ckan.module('form_submit', function ($) {
             }
 
             //Function to insert table into resource and first row with Datastore API
+            ////Not used but kept it for future work
             function create_and_insert_first_row_into_resource(dataset_name, resource_name, final_json_to_send, tmp_obj, is_first = false) {
                 //Get types and consequent questions/answer keys
                 var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
                 tmp_obj.map((x => {
                     fiels_resource.push({ "id": x });
-                    console.log(x);
-                    console.log(final_json_to_send);
-                    console.log(is_first);
-                    console.log(final_json_to_send.hasOwnProperty(x));
                     if (is_first == true)
                         if (!final_json_to_send.hasOwnProperty(x)) {
-                            console.log("ww");
                             final_json_to_send[x] = "";
                         }
 
@@ -97,6 +94,7 @@ ckan.module('form_submit', function ($) {
             }
 
             //Function to insert data row into resource with Datastore API
+            //Not used but kept it for future work
             function insert_new_row_into_resource(resource_id, final_json_to_send) {
                 //ajax request to insert data row into resource
                 console.log(final_json_to_send["records"]);
@@ -129,14 +127,11 @@ ckan.module('form_submit', function ($) {
                 $("#finish_quest").css("display", "none");
                 // Show loader
                 $("#loader").css("display", "block");
-                var overall_obj = [];
                 let questions_entity = [];
                 var tmp_obj = [];
                 //Get all info from questionnaire
                 $('#quest_content_form > div').each(function () {
                     var key = this.id;
-                    var key_id = key.split("_")[0];
-                    //let questions_entity = [];
                     // Get all checked values from questionnaire tables
                     $("#" + key + " #all_tables tbody tr").each(function () {
                         // Get id row
@@ -167,94 +162,53 @@ ckan.module('form_submit', function ($) {
                             questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: row_opt });
                         }
                     });
-                    // if (questions_entity.length > 0)
-                    //     tmp_obj.push(questions_entity);
-
-                    // overall_obj[key_id] = tmp_obj;
                 });
 
-                var resource_id = "";
                 setTimeout(function () {
-                    let dataset_name = "";
-                    let organization_id = "";
-                    let organization_name = "";
-                    let dataset_exists = false;
-                    let resource_exists = false;
-                    let resource_to_use = "";
 
-                    // Get all datasets from a specific user with his key
-                    $.ajax({
-                        url: url + 'api/3/action/current_package_list_with_resources',
-                        type: 'GET',
-                        headers: {
-                            "Authorization": api_ckan_key
-                        },
-                        success: function (data) {
-                            for (var i = 0; i < data.result.length; i++) {
-                                //If organization wasnt associated already
-                                if (organization_id == "") {
-                                    if (data.result[i]["owner_org"] && data.result[i]["owner_org"] != "") {
-                                        organization_id = data.result[i]["owner_org"];
-                                        organization_name = data.result[i]["organization"]["name"]
+                    //Final json structure to send to rabbit
+                    var currentdate = new Date();
+                    var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate };
+                    //Get types and consequent questions/answer keys
+                    var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
 
-                                    }
-                                }
-                                if (dataset_name == "") {
-                                    if (data.result[i]["extras"].length > 0) {
-                                        for (var u = 0; u < data.result[i]["extras"].length; u++) {
-                                            if (data.result[i]["extras"][u]["key"] == "is_data_store") {
-                                                dataset_name = data.result[i]["name"];
-                                                break;
-                                            }
+                    let aux_bool = false;
+                    tmp_obj.map((x => {
+                        fiels_resource.push({ "id": x });
+                        if (!final_json_to_send.hasOwnProperty(x)) {
+                            questions_entity.forEach(y => {
+                                if (y.hasOwnProperty(x)) {
+                                    for (const [key, value] of Object.entries(y)) {
+                                        if (key == x) {
+                                            final_json_to_send[x] = value;
+                                            aux_bool = true;
+                                            break;
                                         }
                                     }
-                                }
-                                // First check if dataset and his resource exists
-                                if (data.result[i]["name"] == dataset_name) {
-                                    dataset_exists = true;
-                                    if (data.result[i]["resources"].length > 0) {
-                                        for (var u = 0; u < data.result[i]["resources"].length; u++) {
-                                            if (type_quest == data.result[i]["resources"][u]["name"]) {
-                                                resource_exists = true;
-                                                resource_id = data.result[i]["resources"][u]["id"];
-                                                resource_to_use = data.result[i]["resources"][u]["name"];
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            //Final json structure to send to rabbit
-                            var currentdate = new Date();
-                            var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate };
-                            questions_entity.forEach(x => {
-                                for (const [key, value] of Object.entries(x)) {
-                                    final_json_to_send[key] = value
                                 }
                             });
-                            //var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "records": questions_entity, "date_submitted": currentdate };
-                            // In case of data_store dataset doenst exists create them
-                            if (!dataset_exists) {
-                                //Create dataset
-                                dataset_name = "Questionnaires Data from " + organization_name;
-                                create_dataset_and_store_resource(dataset_name, organization_id, type_quest, final_json_to_send, tmp_obj);
+                            if (!aux_bool) {
+                                final_json_to_send[x] = "";
                             }
-                            else if (!resource_exists) {
-                                var is_first = true
-                                //Create new resource and insert into it
-                                create_and_insert_first_row_into_resource(dataset_name, type_quest, final_json_to_send, tmp_obj, is_first);
-                            }
-                            else {
-                                //Insert into resource
-                                insert_new_row_into_resource(resource_id, final_json_to_send);
-                            }
-                        },
-                        error: function (data) {
+                            else
+                                aux_bool = false;
+                        }
+
+                    }));
+
+                    //Method that call custom request to create and/or insert submitted questionnaires
+                    //in specific resources
+                    $.ajax({
+                        url: url + 'api/3/action/insert_quests',
+                        type: 'GET',
+                        data: { "name_resource": type_quest, "result": JSON.stringify(final_json_to_send) },
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
                             console.log(data);
+                            window.location.href = "/";
                         }
                     });
-                    window.location.href = "/";
                 }, 3000);
             });
         }
