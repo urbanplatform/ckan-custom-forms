@@ -11,6 +11,11 @@ ckan.module('list_questionnaires', function ($) {
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
 
+            /**
+             * This function is responsible for get the cookies
+             * @param  {[string]} cname name of a specific cookie
+             * @return {[string]} the value associated to the param received
+             */
             function getCookie(cname) {
                 var name = cname + "=";
                 var ca = document.cookie.split(';');
@@ -26,6 +31,7 @@ ckan.module('list_questionnaires', function ($) {
                 return "";
             }
 
+            //Ajax request (GET) to get apikey from the logged user
             $.ajax({
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
@@ -33,11 +39,8 @@ ckan.module('list_questionnaires', function ($) {
                     var is_user = getCookie("ckan");
                     if (is_user) {
                         var user = data.result["user_logged"];
-                        // if (user["sysadmin"] == true) {
-                        //     $("#organization-datasets").css("display", "block");
-                        // }
-                        //Call questionnaires from specific dataset on staging
                         let has_quests = false;
+                        //Ajax request (GET) to get all datasets and consequent resources that the logged user has access
                         $.ajax({
                             url: url + 'api/3/action/current_package_list_with_resources',
                             type: 'GET',
@@ -46,9 +49,11 @@ ckan.module('list_questionnaires', function ($) {
                             },
                             success: function (data) {
                                 data.result.forEach(function (dataset) {
+                                    // Display the datasets created by the logged user
                                     if (dataset.creator_user_id == user["id"]) {
                                         $("#organization-datasets").css("display", "block");
                                     }
+                                    // In case of this dataset has extras for templating, display the resources as questionnaires
                                     if (("extras" in dataset) && (dataset["extras"].length > 0)) {
                                         dataset.extras.forEach(function (extra) {
                                             if ((extra["key"] == "is_templating" && extra["value"] == "true") && (dataset.resources.length > 0)) {
@@ -76,6 +81,11 @@ ckan.module('list_questionnaires', function ($) {
                             }
                         });
 
+                        /**
+                         * This function formats a string to a specific pattern to be defined as a questionnaire title
+                         * @param  {[string]} string_field string to be formatted
+                         * @return {[string]} string formatted and ready to be used as a questionnaire title
+                         */
                         function define_title_word_questionnaire(string_field) {
                             if (string_field != "") {
                                 if (string_field.split(".").length > 1)
@@ -88,6 +98,11 @@ ckan.module('list_questionnaires', function ($) {
                             }
                         }
 
+                        /**
+                         * This function formats a string to a specific pattern to be defined as a questionnaire description
+                         * @param  {[string]} string_field string to be formatted
+                         * @return {[string]} string formatted and ready to be used as a questionnaire description
+                         */
                         function define_description_questionnaire(string_field) {
                             if (string_field != "") {
                                 return string_field.charAt(0).toUpperCase() + string_field.slice(1);
@@ -97,11 +112,19 @@ ckan.module('list_questionnaires', function ($) {
                             }
                         }
 
+                        /**
+                         * This function randomize three possible colors and return one of them
+                         * @return {[string]} string associtated with a color
+                         */
                         function randomColor() {
                             var list_potential_colors = ["primary", "info", "success"];
                             return list_potential_colors[Math.floor(Math.random() * list_potential_colors.length)];
                         }
 
+                        /**
+                         * This function defines the dataset title and id and append HTML code into a specific div
+                         * @param  {[object]} dataset object containing dataset info
+                         */
                         function define_subtitle(dataset) {
                             $("#list-quests").append("\
                             <div style=\" border-bottom: 1px solid grey; \">\
@@ -110,7 +133,12 @@ ckan.module('list_questionnaires', function ($) {
                             </div>");
                         }
 
-                        //Populate div with all available questionnaires 
+                        /**
+                         * This function populates a specific div with all available questionnaires 
+                         * @param  {[string]} dataset_id dataset id
+                         * * @param  {[object]} json_info object containing data from a specific resource
+                         * * @param  {[string]} dataset_name dataset name
+                         */
                         function populate_list_html(dataset_id, json_info, dataset_name) {
                             var title = define_title_word_questionnaire(json_info.name);
                             var description_quest = define_description_questionnaire(json_info.description);

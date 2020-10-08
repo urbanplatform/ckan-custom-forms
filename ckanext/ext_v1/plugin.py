@@ -1,3 +1,8 @@
+"""This file is responsible for all the extra requests made to server side.
+It is possible to create new endpoints and implement different plugins,
+depending on the purpose of this extension.
+"""
+
 # CKAN imports
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
@@ -24,6 +29,14 @@ render = base.render
 # Method to be able to render questionnaires on ckan
 @questionnaire.route("/questionnaire", endpoint="custom_action")
 def custom_action():
+    """Method to enable questionnaires render.
+    It receives three arguments (resource-id; dataset-id; type_quest)
+    that allow us to submit and store any questionnaire successfully
+
+    Returns:
+        toolkit.render: It returns an html page with the needed
+        variables
+    """
     resource_id = request.args.get("resource-id", type=str)
     dataset_id = request.args.get("dataset-id", type=str)
     type_quest = request.args.get("type_quest", type=str)
@@ -39,8 +52,18 @@ def custom_action():
 
 @toolkit.side_effect_free
 def get_key(context, data_dict=None):
-    """
-    Method to get the apikey from logged user
+    """Method to get the apikey from logged user
+
+    Arguments:
+        context (dict): contains several objects: user logged,
+        session, apikey, api version and model
+
+        data_dict (dict): contains all the data sended in the
+        request
+
+    Returns:
+        toolkit.render: It returns an html page with the needed
+        variables
     """
     users = toolkit.get_action("user_list")(data_dict={})
     for user in users:
@@ -52,19 +75,33 @@ def get_key(context, data_dict=None):
 
 @toolkit.side_effect_free
 def insert_quests(context, data_dict=None):
-    """
-    Method to enable members to submit questionnaires and add them into a specific resource.
-    By getting the dataset creator id, we are able to do a temporary login and get the apikey.
-    With it, we can do datastore_update with success and store the response from any user.
+    """Method to enable members to submit questionnaires and add them into a
+    specific resource.
+    By getting the dataset creator id, we are able to do a temporary login and
+    get the apikey.
+    With it, we can do datastore_update with success and store the response
+    from any user.
+
+    Arguments:
+        context (dict): contains several objects: user logged,
+        session, apikey, api version and model
+
+        data_dict (dict): contains all the data sended in the
+        request
+
+    Returns:
+        datastore object : It returns an object depending on the existence
+        of the a specific resource or not. If the resource exists, it returns
+        the modified data object, otherwise it returns the newly created data object
     """
     # Get the name of the resource
     name_resource = data_dict.pop("name_resource", None)
+
     # Initialize variable to have direct access to dabatase
-    # Use this to do read requests only
+    # Its used to do read requests only
     model = context["model"]
 
     if name_resource:
-
         # Get the resource of the questionnaire submmitted
         resource = (
             model.Session.query(model.Resource)
@@ -72,7 +109,12 @@ def insert_quests(context, data_dict=None):
             .filter(model.Resource.state == "active")
             .first()
         )
+        # Convert the data received into a dictionary
         result = ast.literal_eval(json.dumps(data_dict["result"]))
+        # Order the dictionary in two phases : by the last word in the in the
+        # key string (reverse); by the first word in the key string joined
+        # with the number in the key string (in case of neither of this
+        # conditions matches, it orders by all key string)
         ordered_result = OrderedDict(
             sorted(
                 sorted(
@@ -98,7 +140,7 @@ def insert_quests(context, data_dict=None):
                 ),
             ),
         )
-        # If is exists
+        # If resource exists update it with the new submitted questionnaire
         if resource:
             data_to_send = {
                 "resource_id": resource.id.encode("utf-8"),
@@ -112,7 +154,7 @@ def insert_quests(context, data_dict=None):
 
             return insert_quest
         else:
-            # Get dataset responsible for store quesitonnaires
+            # Get dataset responsible for storing quesitonnaires
             dataset = (
                 model.Session.query(model.Package)
                 .join(model.PackageExtra)
@@ -121,7 +163,7 @@ def insert_quests(context, data_dict=None):
                 .first()
             )
 
-            # Create resource and insert on it
+            # Create resource and insert the submitted questionnaire on it
             if dataset:
                 data_to_send = {
                     "resource": {
@@ -151,19 +193,43 @@ def insert_quests(context, data_dict=None):
 
 
 class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
+    """Class that inherits from CKANs SingletonPlugin and DefaultDatasetForm.
+    Here we can configure which plugins we want to implement, the resources and
+    directories to use and create new requests, blueprints, etc.
+    """
+
+    # All the plugins implemented
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.interfaces.IActions)
 
     def update_config(self, config_):
+        """Called by load_environment at the earliest
+        point that config is available to plugins.
+        The config should be updated in place.
+        Define which directories will be used
+        to store all the files needed to this extension
+        """
         toolkit.add_template_directory(config_, "templates")
         toolkit.add_public_directory(config_, "public")
         toolkit.add_resource("fanstatic", "ext_v1")
 
     def get_blueprint(self):
+        """Register an extension as a Flask Blueprint.
 
+        Returns:
+            Return either a single Flask Blueprint
+            object or a list of Flask Blueprint objects
+            to be registered by the app.
+        """
         return questionnaire
 
     def get_actions(self):
-        # Registers the custom API method defined above
+        """Create new actions/requests
+
+        Returns:
+            Should return a dict, the keys being the name
+            of the logic function and the values being the
+            functions themselves.
+        """
         return {"get_key": get_key, "insert_quests": insert_quests}

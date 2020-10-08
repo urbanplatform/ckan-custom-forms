@@ -1,14 +1,21 @@
+/*
+This file is responsible for the submit of a questionnaire. When a questionnaire is submitted,
+it will be stored in a specific resource from a dataset that is marked as a 'is_data_store'.
+If the resource doesnt exists in the moment of submission, it is created and then the all
+the info is stored there. Otherwise, the resource is updated with a new response. 
+*/
 "use strict";
 
 ckan.module('form_submit', function ($) {
     return {
         initialize: function () {
-            // CKAN URL + API init
+            // CKAN url
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
 
-            //CKAN API KEY of admin user
+            // CKAN user apikey
             var api_ckan_key = "";
+            // Ajax request (GET) to get apikey from the logged user
             $.ajax({
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
@@ -19,9 +26,10 @@ ckan.module('form_submit', function ($) {
                     console.log(data);
                 }
             });
+
             //Function to create Dataset with CKAN API
             //Not used but kept it for future work
-            function create_dataset_and_store_resource(dataset_name, organization_id, type_quest, final_json_to_send, tmp_obj) {
+            function create_dataset_and_store_resource(dataset_name, organization_id, type_quest, final_json_to_send, list_with_all_questions_and_answers_ids) {
                 //Create data form to send in the request
                 var dataset_id = dataset_name.split(" ").join("-").toLowerCase();
                 let json_data = {};
@@ -44,7 +52,7 @@ ckan.module('form_submit', function ($) {
                         console.log(data.result);
                         var first = true;
                         //Create new resource and insert into it
-                        create_and_insert_first_row_into_resource(dataset_id, type_quest, final_json_to_send, tmp_obj, first);
+                        create_and_insert_first_row_into_resource(dataset_id, type_quest, final_json_to_send, list_with_all_questions_and_answers_ids, first);
                     },
                     error: function (ts) {
                         console.log(ts.responseText);
@@ -55,10 +63,10 @@ ckan.module('form_submit', function ($) {
 
             //Function to insert table into resource and first row with Datastore API
             ////Not used but kept it for future work
-            function create_and_insert_first_row_into_resource(dataset_name, resource_name, final_json_to_send, tmp_obj, is_first = false) {
+            function create_and_insert_first_row_into_resource(dataset_name, resource_name, final_json_to_send, list_with_all_questions_and_answers_ids, is_first = false) {
                 //Get types and consequent questions/answer keys
                 var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
-                tmp_obj.map((x => {
+                list_with_all_questions_and_answers_ids.map((x => {
                     fiels_resource.push({ "id": x });
                     if (is_first == true)
                         if (!final_json_to_send.hasOwnProperty(x)) {
@@ -119,7 +127,7 @@ ckan.module('form_submit', function ($) {
                 });
             }
 
-            //Function on clicking to save and close questionnaire
+            //Function on clicking to submit, save and close questionnaire
             $("#submitForm").click(function () {
                 // Get the type of questionnaire string from the title
                 var type_quest = $("#form-title").text().toLowerCase().split("-")[1].trim().split(" ").join("_")
@@ -128,7 +136,7 @@ ckan.module('form_submit', function ($) {
                 // Show loader
                 $("#loader").css("display", "block");
                 let questions_entity = [];
-                var tmp_obj = [];
+                var list_with_all_questions_and_answers_ids = [];
                 //Get all info from questionnaire
                 $('#quest_content_form > div').each(function () {
                     var key = this.id;
@@ -136,8 +144,8 @@ ckan.module('form_submit', function ($) {
                     $("#" + key + " #all_tables tbody tr").each(function () {
                         // Get id row
                         var key_opt = $(this).find('input[type="radio"]').attr("id");
-                        tmp_obj.push(key_opt + "_question");
-                        tmp_obj.push(key_opt + "_answer");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_question");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_answer");
                         if ($(this).find('input[type="radio"]').is(":checked")) {
                             // Get question
                             var row_question = $(this).find('th').text().replace('\t', '').replace('*', '');
@@ -151,8 +159,8 @@ ckan.module('form_submit', function ($) {
                     $("#" + key + " #all_tables .input_text").each(function () {
                         // Get id row
                         var key_opt = $(this).find('textarea').attr("id");
-                        tmp_obj.push(key_opt + "_question");
-                        tmp_obj.push(key_opt + "_answer");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_question");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_answer");
                         if ($(this).find('textarea').val() != "") {
                             // Get question
                             var row_question = $(this).find('label').text().replace('\t', '').replace('*', '');
@@ -165,39 +173,42 @@ ckan.module('form_submit', function ($) {
                 });
 
                 setTimeout(function () {
-
-                    //Final json structure to send to rabbit
+                    // Variable to store current date
                     var currentdate = new Date();
+                    // Final json structure
                     var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate };
-                    //Get types and consequent questions/answer keys
+                    // Fields that already exists in the final json
                     var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
+                    // Auxiliar boolean to be able to insert the questions and answer that were answered
+                    let it_has_answer = false;
 
-                    let aux_bool = false;
-                    tmp_obj.map((x => {
+                    list_with_all_questions_and_answers_ids.map((x => {
                         fiels_resource.push({ "id": x });
+                        // In case of final json doesnt contain the key 'x', add it to the final json
+                        // and if has a value, associate it. Otherwise leave it blank
                         if (!final_json_to_send.hasOwnProperty(x)) {
                             questions_entity.forEach(y => {
                                 if (y.hasOwnProperty(x)) {
                                     for (const [key, value] of Object.entries(y)) {
                                         if (key == x) {
                                             final_json_to_send[x] = value;
-                                            aux_bool = true;
+                                            it_has_answer = true;
                                             break;
                                         }
                                     }
                                 }
                             });
-                            if (!aux_bool) {
+                            if (!it_has_answer) {
                                 final_json_to_send[x] = "";
                             }
                             else
-                                aux_bool = false;
+                                it_has_answer = false;
                         }
 
                     }));
 
-                    //Method that call custom request to create and/or insert submitted questionnaires
-                    //in specific resources
+
+                    // Ajax request (GET) to call custom request to create and/or insert submitted questionnaires
                     $.ajax({
                         url: url + 'api/3/action/insert_quests',
                         type: 'GET',

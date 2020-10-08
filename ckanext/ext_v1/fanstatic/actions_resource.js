@@ -1,18 +1,30 @@
+/*
+This file is responsible for fill the questionnaires with the correct information, use a specific format for
+the different type of questions and organize it by several phases, depending on the json stored in the templating
+dataset. For now, it only accepts input text and radio buttons
+*/
 "use strict";
 
 ckan.module('actions_resource', function ($) {
     return {
         initialize: function () {
-            var urlParams = new URLSearchParams(window.location.search);
+
+            // CKAN url
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
+
+            // Get params in the url and instantiate them
+            var urlParams = new URLSearchParams(window.location.search);
             var dataset_id = urlParams.get('dataset-id');
             var resource_id = urlParams.get('resource-id');
             var type_quest = urlParams.get('type_quest');
+
+            // Auxiliary variables
             let count_clicks = 0;
             let num_modules = 0;
             let divs_modules = [];
-            //get ckan API Key
+
+            // Get CKAN apikey from logged user
             var api_ckan_key = "";
             $.ajax({
                 url: url + 'api/3/action/get_key',
@@ -25,6 +37,11 @@ ckan.module('actions_resource', function ($) {
                 }
             });
 
+            /**
+             * This function translate an integer to a string
+             * @param  {[integer]} num a number between 2 and 7
+             * @return {[string]} translation associated to the number received
+             */
             function translate_num(num) {
                 if (num == 2)
                     return "second";
@@ -40,6 +57,12 @@ ckan.module('actions_resource', function ($) {
                     return "seventh";
             }
 
+            /**
+             * This function formats a string to be added as a complement in several tags.
+             * This will allow to associate different tags for colapse purposes and/or others similar actions 
+             * @param  {[string]} title_name String to be formatted
+             * @return {[string]} final word to be added
+             */
             function generate_id_page(title_name) {
                 if (title_name.split(" ").length > 0) {
                     return title_name.split(" ").join("_").toLowerCase();
@@ -47,21 +70,23 @@ ckan.module('actions_resource', function ($) {
                 return title_name.toLowerCase();
             }
 
+            // Ajax request (GET) to get resource data
             $.ajax({
-                //url: 'http://ckan.staging.ubiwhere.com/api/3/action/current_package_list_with_resources',
                 url: url + 'dataset/' + dataset_id + '/resource/' + resource_id + '/download/' + type_quest,
                 type: 'GET',
                 headers: {
                     "Authorization": api_ckan_key
                 },
                 success: function (data) {
-                    //Fill staging
+                    //Fill progress bar
                     $("#all_stages").append("\
                         <li class=\"first active\" id=\"first_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important;\">\
                         <span class=\"highlight\">Start questionnaire</span>\
                     </li>");
+
                     let count_class_staging = 2;
                     for (var i = 0; i < data.pages.length; i++) {
+                        // In case of this page be the presentation one
                         if (data.pages[i]["name"] == "Init") {
                             for (var element = 0; element < data.pages[i]["elements"].length; element++) {
                                 $("#all_stages").append("\
@@ -89,13 +114,13 @@ ckan.module('actions_resource', function ($) {
                             }
                         }
                         else {
-                            // Fill the questionnaire form by key
+                            // Fill the questionnaire with the rest pages separated by phases
                             fill_form(data.pages[i]);
                         }
                         num_modules += 1;
                     }
 
-
+                    // Add the final stage to the progress bar
                     $("#all_stages").append("\
                     <li class=\"last uncomplete\" id=\"last_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important;\">\
                         <span class=\"highlight\">Finish questionnaire</span>\
@@ -108,7 +133,12 @@ ckan.module('actions_resource', function ($) {
                 }
             });
 
-            function translate_type(type_quest) {
+            /**
+             * This function format a string to get only a specific part of it.
+             * @param  {[string]} type_quest String to be formatted
+             * @return {[string]} final word to be added
+             */
+            function translate_type_to_title(type_quest) {
                 if (type_quest != "")
                     if (type_quest.includes("_"))
                         return type_quest.charAt(0).toUpperCase() + type_quest.slice(1).split(".")[0].split("_").join(" ");
@@ -118,18 +148,33 @@ ckan.module('actions_resource', function ($) {
                     return '';
             };
 
+            /**
+             * This function format a string to be associated as part of a identifier.
+             * @param  {[string]} subtitle String to be formatted
+             * @return {[string]} final word to be added
+             */
             function transform_subtitle_id(subtitle) {
                 return subtitle.split(" ").join("_").toLowerCase();
             }
 
-            function generate_function(group_questions, sub) {
-                if ("description" in group_questions)
-                    return group_questions["description"];
-                return sub;
+            /**
+             * This function is responsible for deciding which string will be associated as subtitle of each question.
+             * @param  {[string]} question String to be formatted
+             * @param  {[string]} subtitle String to used if there no description in the question
+             * @return {[string]} final word to be added
+             */
+            function generate_subtitle_of_question(question, subtitle) {
+                if ("description" in question)
+                    return question["description"];
+                return subtitle;
             }
 
-            //Fill the consequent questionnaire form
+            /**
+             * This function is responsible for filling the consequent questionnaire form.
+             * @param  {[object]} page all the information in one page of the questionnaire
+             */
             function fill_form(page) {
+                // Add the name of the page as title and static data for a specific phase
                 $("#quest_content_form").append("\
                 <div class=\"panel-group\" id=\""+ generate_id_page(page["name"]) + "_quest\" aria-multiselectable=\"true\" style=\"display: none;\">\
                     <h3>"+ page["name"] + "</h3>\
@@ -210,7 +255,7 @@ ckan.module('actions_resource', function ($) {
                                             localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
                                             id_table = table_in + "_" + localStorage.getItem('num_tables');
                                             $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
-                                                    <div class=\"panel-heading\">" + generate_function(val[question], subtitle) + "</div>");
+                                                    <div class=\"panel-heading\">" + generate_subtitle_of_question(val[question], subtitle) + "</div>");
 
                                             $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
                                                     <table class=\"table\" id=\"" + id_table + "\">\
@@ -238,7 +283,7 @@ ckan.module('actions_resource', function ($) {
                                         localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
                                         id_table = table_in + "_" + localStorage.getItem('num_tables');
                                         $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
-                                                <div class=\"panel-heading\">" + generate_function(val[question], subtitle) + "</div>");
+                                                <div class=\"panel-heading\">" + generate_subtitle_of_question(val[question], subtitle) + "</div>");
 
                                         $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
                                                 <table class=\"table\" id=\"" + id_table + "\">\
@@ -269,7 +314,7 @@ ckan.module('actions_resource', function ($) {
             }
 
             // Add questionnaire type to the form title
-            $("#form-title").append(translate_type(type_quest));
+            $("#form-title").append(translate_type_to_title(type_quest));
             // Function to cancel the questionnaire and redirect to index page
             $("#cancel_quest").on("click", function () {
                 window.location.href = "/";
