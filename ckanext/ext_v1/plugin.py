@@ -73,7 +73,7 @@ def get_key(context, data_dict=None):
             return {"user_logged": user_logged}
 
 
-@toolkit.side_effect_free
+# @toolkit.side_effect_free
 def insert_quests(context, data_dict=None):
     """Method to enable members to submit questionnaires and add them into a
     specific resource.
