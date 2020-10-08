@@ -211,8 +211,8 @@ ckan.module('form_submit', function ($) {
                     // Ajax request (GET) to call custom request to create and/or insert submitted questionnaires
                     $.ajax({
                         url: url + 'api/3/action/insert_quests',
-                        type: 'GET',
-                        data: { "name_resource": type_quest, "result": JSON.stringify(final_json_to_send) },
+                        type: 'POST',
+                        data: JSON.stringify({ "name_resource": type_quest, "result": JSON.stringify(final_json_to_send) }),
                         dataType: "json",
                         contentType: "application/json; charset=utf-8",
                         success: function (data) {
