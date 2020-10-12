@@ -24,13 +24,98 @@ ckan.module('actions_resource', function ($) {
             let num_modules = 0;
             let divs_modules = [];
 
-            // Get CKAN apikey from logged user
+            // Logged user variables
             var api_ckan_key = "";
+            var role_user = "";
             $.ajax({
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
                 success: function (data) {
-                    api_ckan_key = data.result["user_logged"]["apikey"];
+                    if (data.result.hasOwnProperty("user_logged")) {
+                        api_ckan_key = data.result["user_logged"]["apikey"];
+                    }
+                    $.ajax({
+                        url: url + 'api/3/action/get_user_role',
+                        type: 'GET',
+                        data: { "dataset_id": dataset_id },
+                        contentType: "application/json",
+                        success: function (data) {
+                            role_user = data.result["user_role"];
+                            // Ajax request (GET) to get resource data
+                            $.ajax({
+                                url: url + 'dataset/' + dataset_id + '/resource/' + resource_id + '/download/' + type_quest,
+                                type: 'GET',
+                                headers: {
+                                    "Authorization": api_ckan_key
+                                },
+                                success: function (data) {
+                                    if (data.pages.filter(page => page["name"] == "Init" || page["elements"].find(obj => obj.hasOwnProperty("type"))["type"] === "comment").length > 0) {
+                                        //display button and introduction text
+                                        $("#text-initial-presentation").css("display", "block");
+                                        $(".form-actions").css("display", "block");
+                                        //Fill progress bar
+                                        $("#all_stages").append("\
+                                        <li class=\"first active\" id=\"first_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important;\">\
+                                        <span class=\"highlight\">Start questionnaire</span>\
+                                        </li>");
+
+                                        let count_class_staging = 2;
+                                        for (var i = 0; i < data.pages.length; i++) {
+                                            // In case of this page be the presentation one
+                                            if (data.pages[i]["name"] == "Init" || i == 0) {
+                                                for (var element = 0; element < data.pages[i]["elements"].length; element++) {
+                                                    $("#all_stages").append("\
+                                                        <li class=\""+ translate_num(count_class_staging) + " uncomplete\" id=\"" + translate_num(count_class_staging) + "_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important; \">\
+                                                            <span class=\"highlight\"> "+ data.pages[i]["elements"][element]["title"] + "</span >\
+                                                        </li>");
+                                                    count_class_staging += 1;
+                                                    $("#accordion").append("\
+                                                        <div class=\"panel panel-default\">\
+                                                            <div class=\"panel-heading\" role=\"tab\" id=\"heading_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\">\
+                                                                <h4 class=\"panel-title\">\
+                                                                    <a class=\"collapsed\" role=\"button\" data-toggle=\"collapse\" data-parent=\"#accordion\"\
+                                                                        href=\"#collapse_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\" aria-expanded=\"false\" aria-controls=\"collapse" + generate_id_page(data.pages[i]["elements"][element]["name"]) + "\">\
+                                                                        "+ data.pages[i]["elements"][element]["title"] + "\
+                                                                    </a>\
+                                                                </h4>\
+                                                            </div>\
+                                                            <div id=\"collapse_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\" class=\"panel-collapse collapse\" role=\"tabpanel\"\
+                                                                aria-labelledby=\"heading_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\" style=\"margin-top: 16px; \">\
+                                                                <div class=\"container\">\
+                                                                    <p>"+ data.pages[i]["elements"][element]["defaultValue"] + " </p>\
+                                                                </div>\
+                                                            </div>\
+                                                        </div>");
+                                                }
+                                            }
+                                            else {
+                                                // Fill the questionnaire with the rest pages separated by phases
+                                                fill_form(data.pages[i]);
+                                            }
+                                            num_modules += 1;
+                                        }
+
+                                        // Add the final stage to the progress bar
+                                        $("#all_stages").append("\
+                                        <li class=\"last uncomplete\" id=\"last_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important;\">\
+                                            <span class=\"highlight\">Finish questionnaire</span>\
+                                        </li>");
+                                    }
+                                    else {
+                                        message_bad_quest();
+                                    }
+
+
+                                },
+                                error: function (data) {
+                                    console.log(data);
+                                }
+                            });
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                    });
                 },
                 error: function (data) {
                     console.log(data);
@@ -70,68 +155,29 @@ ckan.module('actions_resource', function ($) {
                 return title_name.toLowerCase();
             }
 
-            // Ajax request (GET) to get resource data
-            $.ajax({
-                url: url + 'dataset/' + dataset_id + '/resource/' + resource_id + '/download/' + type_quest,
-                type: 'GET',
-                headers: {
-                    "Authorization": api_ckan_key
-                },
-                success: function (data) {
-                    //Fill progress bar
-                    $("#all_stages").append("\
-                        <li class=\"first active\" id=\"first_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important;\">\
-                        <span class=\"highlight\">Start questionnaire</span>\
-                    </li>");
-
-                    let count_class_staging = 2;
-                    for (var i = 0; i < data.pages.length; i++) {
-                        // In case of this page be the presentation one
-                        if (data.pages[i]["name"] == "Init") {
-                            for (var element = 0; element < data.pages[i]["elements"].length; element++) {
-                                $("#all_stages").append("\
-                                <li class=\""+ translate_num(count_class_staging) + " uncomplete\" id=\"" + translate_num(count_class_staging) + "_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important; \">\
-                                    <span class=\"highlight\"> "+ data.pages[i]["elements"][element]["title"] + "</span >\
-                                </li>");
-                                count_class_staging += 1;
-                                $("#accordion").append("\
-                                <div class=\"panel panel-default\">\
-                                    <div class=\"panel-heading\" role=\"tab\" id=\"heading_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\">\
-                                        <h4 class=\"panel-title\">\
-                                            <a class=\"collapsed\" role=\"button\" data-toggle=\"collapse\" data-parent=\"#accordion\"\
-                                                href=\"#collapse_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\" aria-expanded=\"false\" aria-controls=\"collapse" + generate_id_page(data.pages[i]["elements"][element]["name"]) + "\">\
-                                                "+ data.pages[i]["elements"][element]["title"] + "\
-                                            </a>\
-                                        </h4>\
-                                    </div>\
-                                    <div id=\"collapse_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\" class=\"panel-collapse collapse\" role=\"tabpanel\"\
-                                        aria-labelledby=\"heading_"+ generate_id_page(data.pages[i]["elements"][element]["name"]) + "\" style=\"margin-top: 16px; \">\
-                                        <div class=\"container\">\
-                                            <p>"+ data.pages[i]["elements"][element]["defaultValue"] + " </p>\
-                                        </div>\
-                                    </div>\
-                                </div>");
-                            }
-                        }
-                        else {
-                            // Fill the questionnaire with the rest pages separated by phases
-                            fill_form(data.pages[i]);
-                        }
-                        num_modules += 1;
-                    }
-
-                    // Add the final stage to the progress bar
-                    $("#all_stages").append("\
-                    <li class=\"last uncomplete\" id=\"last_stage\" style=\"width: " + Math.floor(100 / (Object.keys(data.pages).length + 1)) + "% !important;\">\
-                        <span class=\"highlight\">Finish questionnaire</span>\
-                    </li>");
-
-
-                },
-                error: function (data) {
-                    console.log(data);
+            function message_bad_quest() {
+                /* Message to warning the user that the questionnaire has a wrong structure */
+                // Verify if the user is admin to return an hint message in the board. Otherwise just return that the questionnaire is unavailable
+                $("#text-initial-presentation").css("display", "none");
+                $(".form-actions").css("display", "none");
+                console.log(role_user)
+                if (role_user == "admin") {
+                    //if is admin
+                    $("#quest_content_form").append("\
+                    <div class=\"panel-group\" id=\"wrong_quest\" aria-multiselectable=\"true\" style=\"display: block; text-align: center;\">\
+                    <h3>Please verify the file associated to this questionnaire</h3>\
+                    <p>The following questionnaire has a bad structure. Please go to <a href=\"https://surveyjs.io/Examples/Survey-Creator\">Survey JS Generator</a> and import the data file to review\
+                    and fix the it.</p><p>For more information, please <a href=\"/Survey-Helper.pdf\" download >download and read this file</a></p>\
+                    <p>Download the json example <a href=\"/Example-Survey.json\" download >HERE</a></p>");
                 }
-            });
+                else {
+                    // if is member or non registered user
+                    $("#quest_content_form").append("\
+                    <div class=\"panel-group\" id=\"wrong_quest\" aria-multiselectable=\"true\" style=\"display: block; text-align: center;\">\
+                    <h3>The current questionnaire is unavailable</h3>\
+                    <p>Try again later or contact the organization responsible for the questionnaire.</p>");
+                }
+            }
 
             /**
              * This function format a string to get only a specific part of it.
