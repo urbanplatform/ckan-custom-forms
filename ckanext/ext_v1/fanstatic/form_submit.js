@@ -13,14 +13,22 @@ ckan.module('form_submit', function ($) {
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
 
+            // Get organization name
+            var urlParams = new URLSearchParams(window.location.search);
+            var organization_id = urlParams.get('organization-id');
+
             // CKAN user apikey
             var api_ckan_key = "";
+            var username = "----";
             // Ajax request (GET) to get apikey from the logged user
             $.ajax({
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
                 success: function (data) {
-                    api_ckan_key = data.result["user_logged"]["apikey"];
+                    if (data.result.hasOwnProperty("user_logged")) {
+                        api_ckan_key = data.result["user_logged"]["apikey"];
+                        username = data.result["user_logged"]["name"]
+                    }
                 },
                 error: function (data) {
                     console.log(data);
@@ -176,9 +184,9 @@ ckan.module('form_submit', function ($) {
                     // Variable to store current date
                     var currentdate = new Date();
                     // Final json structure
-                    var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate };
+                    var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate, "username": username };
                     // Fields that already exists in the final json
-                    var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
+                    var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }, { "id": "username" }];
                     // Auxiliar boolean to be able to insert the questions and answer that were answered
                     let it_has_answer = false;
 
@@ -207,12 +215,11 @@ ckan.module('form_submit', function ($) {
 
                     }));
 
-
                     // Ajax request (GET) to call custom request to create and/or insert submitted questionnaires
                     $.ajax({
                         url: url + 'api/3/action/insert_quests',
                         type: 'POST',
-                        data: JSON.stringify({ "name_resource": type_quest, "result": JSON.stringify(final_json_to_send) }),
+                        data: JSON.stringify({ "name_resource": type_quest, "organization_id": organization_id, "result": JSON.stringify(final_json_to_send) }),
                         dataType: "json",
                         contentType: "application/json; charset=utf-8",
                         success: function (data) {

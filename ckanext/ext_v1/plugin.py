@@ -37,12 +37,14 @@ def custom_action():
         toolkit.render: It returns an html page with the needed
         variables
     """
+    organization = request.args.get("organization", type=str)
     resource_id = request.args.get("resource-id", type=str)
     dataset_id = request.args.get("dataset-id", type=str)
     type_quest = request.args.get("type_quest", type=str)
     return toolkit.render(
         "home/questionnaires.html",
         extra_vars={
+            "organization": organization,
             "resource-id": resource_id,
             "dataset-id": dataset_id,
             "type_quest": type_quest,
@@ -81,6 +83,8 @@ def insert_quests(context, data_dict=None):
     get the apikey.
     With it, we can do datastore_update with success and store the response
     from any user.
+    In case of the organization associated with the questionnaire doesnt had
+    dataset to store the data, its created automatically
 
     Arguments:
         context (dict): contains several objects: user logged,
@@ -90,23 +94,55 @@ def insert_quests(context, data_dict=None):
         request
 
     Returns:
-        datastore object : It returns an object depending on the existence
+        datastore (object) : It returns an object depending on the existence
         of the a specific resource or not. If the resource exists, it returns
         the modified data object, otherwise it returns the newly created data object
     """
-    # Get the name of the resource
+    # Get the name of the resource and organization
     name_resource = data_dict.pop("name_resource", None)
+    organization_id = data_dict.pop("organization_id", None)
 
     # Initialize variable to have direct access to dabatase
     # Its used to do read requests only
     model = context["model"]
+    if organization_id:
+        # check if organization has dataset to store data
+        dataset_in = (
+            model.Session.query(model.Package)
+            .join(model.PackageExtra)
+            .filter(model.Package.state == "active")
+            .filter(model.Package.owner_org == organization_id)
+            .filter(model.PackageExtra.key == "is_data_store")
+            .first()
+        )
+        new_dataset = None
+        if not dataset_in:
+            data_dataset = {
+                "title": "Questionnaires Data Submitted",
+                "name": "questionnaires-data-submitted-" + organization_id + "",
+                "owner_org": organization_id,
+                "private": "true",
+                "extras": [{"key": "is_data_store", "value": "true"}],
+            }
+            new_dataset = toolkit.get_action("package_create")(
+                context={"ignore_auth": "true"}, data_dict=data_dataset,
+            )
+            print("Create Dataset")
+
+    else:
+        return {
+            "success": False,
+            "msg": "Organization name is invalid.",
+        }
 
     if name_resource:
         # Get the resource of the questionnaire submmitted
         resource = (
             model.Session.query(model.Resource)
+            .join(model.Package)
             .filter(model.Resource.name == name_resource)
             .filter(model.Resource.state == "active")
+            .filter(model.Package.state == "active")
             .first()
         )
         # Convert the data received into a dictionary
@@ -154,20 +190,26 @@ def insert_quests(context, data_dict=None):
 
             return insert_quest
         else:
-            # Get dataset responsible for storing quesitonnaires
-            dataset = (
-                model.Session.query(model.Package)
-                .join(model.PackageExtra)
-                .filter(model.Package.state == "active")
-                .filter(model.PackageExtra.key == "is_data_store")
-                .first()
-            )
+            if new_dataset:
+                dataset = new_dataset
+                name_package = dataset["name"]
+            else:
+                # Get dataset responsible for storing quesitonnaires
+                dataset = (
+                    model.Session.query(model.Package)
+                    .join(model.PackageExtra)
+                    .filter(model.Package.state == "active")
+                    .filter(model.PackageExtra.key == "is_data_store")
+                    .filter(model.Package.owner_org == organization_id)
+                    .first()
+                )
+                name_package = dataset.name
 
             # Create resource and insert the submitted questionnaire on it
             if dataset:
                 data_to_send = {
                     "resource": {
-                        "package_id": dataset.name,
+                        "package_id": name_package,
                         "name": name_resource,
                         "format": "json",
                     },
@@ -190,6 +232,50 @@ def insert_quests(context, data_dict=None):
             "success": False,
             "msg": "Resource name is invalid.",
         }
+
+
+@toolkit.side_effect_free
+def get_user_role(context, data_dict=None):
+    """This method it was created to get the role of the logged user.
+
+    Args:
+        context (dict): contains several objects: user logged,
+        session, apikey, api version and model
+
+        data_dict (dict): contains all the data sended in the
+        request
+
+    Returns:
+        user_role (object): logged user role. It retunes 'none' in case of a 
+        non registered user.
+    """
+    # Get the id of the logged user
+    dataset_id = data_dict.pop("dataset_id", "")
+    user = context["auth_user_obj"]
+
+    if not user.id:
+        return {"user_role": "none"}
+
+    user_logged_org = toolkit.get_action("organization_list_for_user")(
+        data_dict={"id": user.id}
+    )
+
+    # Initialize variable to have direct access to dabatase
+    # Its used to do read requests only
+    model = context["model"]
+
+    if user_logged_org and dataset_id:
+        organization_quest = (
+            model.Session.query(model.Package)
+            .filter(model.Package.id == dataset_id)
+            .first()
+        )
+        for org in user_logged_org:
+            if org["id"] == organization_quest.owner_org:
+                role = org["capacity"]
+                return {"user_role": role}
+
+        return {"user_role": "none"}
 
 
 class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -232,4 +318,9 @@ class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             of the logic function and the values being the
             functions themselves.
         """
-        return {"get_key": get_key, "insert_quests": insert_quests}
+        return {
+            "get_key": get_key,
+            "insert_quests": insert_quests,
+            "get_user_role": get_user_role,
+        }
+
