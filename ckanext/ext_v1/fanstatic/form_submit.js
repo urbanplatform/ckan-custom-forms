@@ -182,7 +182,14 @@ ckan.module('form_submit', function ($) {
 
                 setTimeout(function () {
                     // Variable to store current date
+                    var currentdate_no_timezone = new Date();
+                    currentdate_no_timezone = currentdate_no_timezone.getTimezoneOffset();
+                    if (currentdate_no_timezone < 0)
+                        currentdate_no_timezone = Math.abs(currentdate_no_timezone);
+                    else
+                        currentdate_no_timezone = -Math.abs(currentdate_no_timezone);
                     var currentdate = new Date();
+                    currentdate.setMinutes(currentdate.getMinutes() + currentdate_no_timezone);
                     // Final json structure
                     var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate, "username": username };
                     // Fields that already exists in the final json
