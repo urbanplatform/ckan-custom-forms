@@ -253,7 +253,7 @@ def get_user_role(context, data_dict=None):
     dataset_id = data_dict.pop("dataset_id", "")
     user = context["auth_user_obj"]
 
-    if not user.id:
+    if not user:
         return {"user_role": "none"}
 
     user_logged_org = toolkit.get_action("organization_list_for_user")(
