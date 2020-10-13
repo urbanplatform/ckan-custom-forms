@@ -25,7 +25,7 @@ ckan.module('form_submit', function ($) {
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
                 success: function (data) {
-                    if (data.result.hasOwnProperty("user_logged")) {
+                    if ((data.result) && (data.result.hasOwnProperty("user_logged"))) {
                         api_ckan_key = data.result["user_logged"]["apikey"];
                         username = data.result["user_logged"]["name"]
                     }
