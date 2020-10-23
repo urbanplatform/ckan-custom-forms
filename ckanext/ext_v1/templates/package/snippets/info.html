@@ -1,0 +1,83 @@
+{#
+    Displays a sidebard module with information for given package
+    
+    pkg    - The package dict that owns the resources.
+    
+    Example:
+    
+      {% snippet "package/snippets/info.html", pkg=pkg %}
+    
+    #}
+
+{% block package_info %}
+{% if pkg %}
+<link rel="stylesheet" href="/questionnaire_style.css" />
+<section class="module module-narrow">
+    <div class="module context-info">
+        <div class="module-content">
+            {% block package_info_inner %}
+            {% block heading %}
+            <h1 class="heading">{{ h.dataset_display_name(pkg) }}</h1>
+            {% endblock %}
+            {% block nums %}
+            {% set num_followers = h.follow_count('dataset', pkg.id) %}
+            <div class="nums">
+                <dl>
+                    <dt>{{ _('Followers') }}</dt>
+                    <dd data-module="followers-counter" data-module-id="{{ pkg.id }}"
+                        data-module-num_followers="{{ num_followers }}">{{ h.SI_number_span(num_followers) }}</dd>
+                </dl>
+            </div>
+            {% endblock %}
+            {% block follow_button %}
+            {% if not hide_follow_button %}
+            <div class="follow_button">
+                {{ h.follow_button('dataset', pkg.id) }}
+            </div>
+            {% endif %}
+            {% endblock %}
+            {% endblock %}
+        </div>
+        <div class="module-content side-dataset">
+            <p style="margin-top: 16px; position: fixed;">
+            <h3>Helper on Custom Fields</h3>
+            <span class="italic-dataset-helper">Here we have all the custom fields that you can use to
+                identify your dataset.</span>
+            <table class="table-dataset">
+                <tr>
+                    <th>Key</th>
+                    <th>Possible values</th>
+                </tr>
+                <tr>
+                    <td>is_templating</td>
+                    <td>true or false</td>
+                </tr>
+                <tr>
+                    <td>is_data_store</td>
+                    <td>true or false</td>
+                </tr>
+                <tr>
+                    <td>is_patient_store</td>
+                    <td>true or false</td>
+                </tr>
+            </table>
+            <p><span style="font-weight: bold;">is_templating</span>
+                - This field has the purpose of defining a dataset as a
+                survey content store.
+            </p>
+            <p><span style="font-weight: bold;">is_data_store</span>
+                - This field has the purpose of defining a dataset as a
+                data store from the questionnaires responses.
+            </p>
+            <p><span style="font-weight: bold;">is_patient_store</span>
+                - This field has the purpose of defining a dataset as a
+                data store from the uploaded patients files.
+            </p>
+
+            </p>
+
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
