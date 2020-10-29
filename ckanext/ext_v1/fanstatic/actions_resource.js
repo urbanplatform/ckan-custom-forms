@@ -49,7 +49,9 @@ ckan.module('actions_resource', function ($) {
                                     "Authorization": api_ckan_key
                                 },
                                 success: function (data) {
-                                    if (data.pages.filter(page => page["name"] == "Init" || page["elements"].find(obj => obj.hasOwnProperty("type"))["type"] === "comment").length > 0) {
+                                    // Verify if the questionnaires are ok
+                                    if ((data.pages.filter(page => ((page["name"] == "Init" || page["elements"].find(obj => obj.hasOwnProperty("type"))["type"] === "comment")) && !page["type"]).length > 0)
+                                        && (data.pages.filter(page => page["elements"].find(obj => obj["type"] != "panel")).length === 1)) {
                                         //display button and introduction text
                                         $("#text-initial-presentation").css("display", "block");
                                         $(".form-actions").css("display", "block");
@@ -160,22 +162,24 @@ ckan.module('actions_resource', function ($) {
                 // Verify if the user is admin to return an hint message in the board. Otherwise just return that the questionnaire is unavailable
                 $("#text-initial-presentation").css("display", "none");
                 $(".form-actions").css("display", "none");
-                console.log(role_user)
                 if (role_user == "admin") {
                     //if is admin
                     $("#quest_content_form").append("\
                     <div class=\"panel-group\" id=\"wrong_quest\" aria-multiselectable=\"true\" style=\"display: block; text-align: center;\">\
+                    <i class=\"fa fa-exclamation-triangle\" style=\"font-size: 10em;\"></i>\
                     <h3>Please verify the file associated to this questionnaire</h3>\
                     <p>The following questionnaire has a bad structure. Please go to <a href=\"https://surveyjs.io/Examples/Survey-Creator\">Survey JS Generator</a> and import the data file to review\
-                    and fix the it.</p><p>For more information, please <a href=\"/Survey-Helper.pdf\" download >download and read this file</a></p>\
+                    and fix it.</p><p>For more information, please <a href=\"/Survey-Helper.pdf\" download >download and read this file</a></p>\
                     <p>Download the json example <a href=\"/Example-Survey.json\" download >HERE</a></p>");
                 }
                 else {
                     // if is member or non registered user
                     $("#quest_content_form").append("\
                     <div class=\"panel-group\" id=\"wrong_quest\" aria-multiselectable=\"true\" style=\"display: block; text-align: center;\">\
+                    <i class=\"fa fa-eye-slash\" style=\"font-size: 10em;\"></i>\
                     <h3>The current questionnaire is unavailable</h3>\
                     <p>Try again later or contact the organization responsible for the questionnaire.</p>");
+
                 }
             }
 
@@ -216,6 +220,111 @@ ckan.module('actions_resource', function ($) {
             }
 
             /**
+             * @param  {[string]} op_type String to be formatted
+             * @param  {[string]} html_text String to used if there no description in the question
+             * @return {[string]} final word to be added
+             */
+            function organize_strucuture(page, subtitle, html_text, type_question, first_table_from_subtype, op_type = null, last_op = null, table_in = null, add_row = null, trs = null) {
+                if (type_question == "radiogroup") {
+                    var id_table = "";
+                    //In case of table were already created
+                    if ((table_in == localStorage.getItem('last_table_in') || "") && last_op.toLowerCase() == op_type.toLowerCase()) {
+                        //if table has subtype and its in the same table
+                        if ("description" in html_text && html_text["description"] == localStorage.getItem('atual_table_description')) {
+                            //if last options used its equal to actual options
+                            //just add row to the table
+                            id_table = table_in + "_" + localStorage.getItem('num_tables');
+                            $("#" + id_table + " tbody").append(add_row);
+                        }
+                        //If table has subtype
+                        else if (!localStorage.getItem('opts') || ((localStorage.getItem('opts').length > 0) && (trs != localStorage.getItem('opts')))) {
+                            localStorage.setItem('opts', trs);
+                            localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
+                            id_table = table_in + "_" + localStorage.getItem('num_tables');
+                            // Subtype of table <Emotions>
+                            $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("\
+                                                    <div class=\"panel-heading\" style=\"background-color: "+ (generate_subtitle_of_question(html_text, subtitle) != subtitle ? "#eeeeee" : "none") + "\"> "
+                                + (generate_subtitle_of_question(html_text, subtitle) != subtitle ? generate_subtitle_of_question(html_text, subtitle) : "") + "</div>");
+
+                            // Table 
+                            $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("\
+                                                    <table class=\"table\" id=\"" + id_table + "\">\
+                                                    <thead></thead><tbody></tbody></table>");
+                            $("#" + id_table + " thead").append(trs);
+                            $("#" + id_table + " tbody").append(add_row);
+                            localStorage.setItem('last_table_in', table_in);
+                            last_op = op_type.toLowerCase();
+                            localStorage.setItem('atual_table_description', html_text["description"]);
+                        }
+                        else {
+                            //if last options used its equal to actual options
+                            //just add row to the table
+                            id_table = table_in + "_" + localStorage.getItem('num_tables');
+                            $("#" + id_table + " tbody").append(add_row);
+                        }
+                    }
+                    //Create table and add all the tags and information needed 
+                    else {
+                        localStorage.setItem('opts', trs);
+                        if (parseInt(localStorage.getItem('num_tables')) == 0)
+                            localStorage.setItem('lastSubtitle', '');
+                        //New group with a subtitle defining it
+                        if (localStorage.getItem('lastSubtitle') != first_table_from_subtype) {
+                            $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("<div id=\"group_" + transform_subtitle_id(subtitle) + "\" class=\"radio_group_questions\"</div>");
+                            $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("<p class=\"subtypes\">" + subtitle + "</p>");
+                            localStorage.setItem('lastSubtitle', first_table_from_subtype);
+                        }
+                        localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
+                        id_table = table_in + "_" + localStorage.getItem('num_tables');
+                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("\
+                                                <div class=\"panel-heading\" style=\"background-color: "+ (generate_subtitle_of_question(html_text, subtitle) != subtitle ? "#eeeeee" : "none") + "\">"
+                            + (generate_subtitle_of_question(html_text, subtitle) != subtitle ? generate_subtitle_of_question(html_text, subtitle) : "") + "</div>");
+
+                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("\
+                                                <table class=\"table\" id=\"" + id_table + "\">\
+                                                <thead></thead><tbody></tbody></table>");
+                        $("#" + id_table + " thead").append(trs);
+                        $("#" + id_table + " tbody").append(add_row);
+                        localStorage.setItem('last_table_in', table_in);
+                        last_op = op_type.toLowerCase();
+                        if ("description" in html_text)
+                            localStorage.setItem('atual_table_description', html_text["description"]);
+
+                    }
+                }
+                else if (type_question == "text" || type_question == "file") {
+                    if (parseInt(localStorage.getItem('num_tables')) == 0)
+                        localStorage.setItem('lastSubtitle', '');
+
+                    if (localStorage.getItem('lastSubtitle') != first_table_from_subtype) {
+                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("<div id=\"group_" + transform_subtitle_id(subtitle) + "\" class=\"radio_group_questions\"</div>");
+                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("<p class=\"subtypes\">" + subtitle + "</p>");
+                        localStorage.setItem('lastSubtitle', first_table_from_subtype);
+                    }
+                    localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
+                    $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append(html_text);
+                    localStorage.setItem('last_table_in', table_in);
+                    last_op = "text_question";
+                }
+                else if (type_question == "html") {
+                    if (parseInt(localStorage.getItem('num_tables')) == 0)
+                        localStorage.setItem('lastSubtitle', '');
+
+                    if (localStorage.getItem('lastSubtitle') != first_table_from_subtype) {
+                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("<div id=\"group_" + transform_subtitle_id(subtitle) + "\" class=\"radio_group_questions\"</div>");
+                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("<p class=\"subtypes\">" + subtitle + "</p>");
+                        localStorage.setItem('lastSubtitle', first_table_from_subtype);
+                    }
+                    localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
+                    $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append(html_text);
+                    localStorage.setItem('last_table_in', table_in);
+                    last_op = "html_question";
+                }
+
+                return last_op
+            }
+
+            /**
              * This function is responsible for filling the consequent questionnaire form.
              * @param  {[object]} page all the information in one page of the questionnaire
              */
@@ -236,38 +345,124 @@ ckan.module('actions_resource', function ($) {
                 //For each question in list, append row to the table with consequent options
                 for (var panel = 0; panel < page["elements"].length; panel++) {
                     jQuery.each(page["elements"][panel], function (key, val) {
-                        var table_in = transform_subtitle_id(subtitle);
                         let last_op = "";
-                        let first_table_from_subtype = true;
+                        let op_type = "";
                         if (key == "name")
                             subtitle = val;
+                        var table_in = transform_subtitle_id(subtitle);
+                        let first_table_from_subtype = subtitle;
                         if (key == "elements") {
                             for (var question = 0; question < val.length; question++) {
                                 let is_required = false;
                                 if (val[question]["isRequired"] == true)
                                     is_required = true;
 
+                                // If question is input text
                                 if (val[question]["type"] == "text") {
-                                    last_op = "input_text";
-                                    var quest_text = " <div class=\"row input_text\">\
-                                        <div class=\"text col-md-12\" style=\"text-align:center\">\
-                                            <label>"+ val[question]["title"] + (is_required == true ? "*" : "") + "</label>\
+                                    var type_box_class = "";
+                                    //if (localStorage.getItem('lastSubtitle') == first_table_from_subtype)
+                                    // type_box_class = "input_text_no_box";
+                                    // else
+                                    type_box_class = "input_text_with_box";
+
+                                    var quest_text = " <div class=\"row input_text " + type_box_class + "\">\
+                                        <div class=\"text col-md-12\" style=\"text-align:left\">\
+                                            <label>"+ val[question]["title"] + (is_required == true ? "<span style=\"color:red\">*</span>" : "") + "</label>\
                                         </div >\
                                         <div class=\"text col-md-12\" style=\"margin-top:8px\">\
-                                            <textarea style=\"width:100%; resize: none;\" placeholder=\"Please, write the answer here...\" rows=\"4\" id=\""+ generate_id_page(page["name"]) + "_" + num_quests + "\" name=\"opt_" + generate_id_page(page["name"]) + "_" + num_quests + "\" ></textarea>\
+                                            <textarea class=\"text_area_input_text\" rows=1 placeholder=\"Please, write the answer here...\" id=\""+ generate_id_page(page["name"]) + "_" + num_quests + "\" name=\"opt_" + generate_id_page(page["name"]) + "_" + num_quests + "\" ></textarea>\
                                         </div >\
                                     </div>";
-                                    $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append(quest_text);
+
+                                    last_op = organize_strucuture(page, subtitle, quest_text, val[question]["type"], first_table_from_subtype, op_type, last_op, table_in);
+                                    //$("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append(quest_text);
+                                    //flexible height
+                                    $('.' + type_box_class + ' textarea').on("input", function (e) {
+                                        $(this)[0].style.height = $(this)[0].scrollHeight + "px";
+                                    });
                                 }
-                                else {
+                                // If question is input file
+                                else if (val[question]["type"] == "file") {
+                                    var type_box_class = ""
+                                    //if (localStorage.getItem('lastSubtitle') == first_table_from_subtype)
+                                    // type_box_class = "input_file_no_box";
+                                    // else
+                                    type_box_class = "input_file_with_box";
+
+                                    var is_multiple = "";
+                                    if (val[question].hasOwnProperty("allowMultiple"))
+                                        is_multiple = "multiple"; //val[question]["allowMultiple"];
+
+                                    var file_upload = "\
+                                    <div class=\"row  input_file "+ type_box_class + " \">\
+                                        <div class=\"text col-md-4\" style=\"text-align:left\">\
+                                            <label id=\"input_file_question\">"+ val[question]["title"] + (is_required == true ? "<span style=\"color:red\">*</span>" : "") + "</label>\
+                                            <input class=\"file_choose_btn\" type=\"file\" "+ is_multiple + " accept=\"image/png, image/jpeg\" id=\"" + generate_id_page(page["name"]) + "_" + num_quests + "\">\
+                                            <label class=\"no_content\" id=\"label_btn_"+ generate_id_page(page["name"]) + "_" + num_quests + "\" for=\"" + generate_id_page(page["name"]) + "_" + num_quests + "\">\
+                                            <i style=\"margin-right:8px\" class=\"fa fa-upload\"></i><strong>Choose a file</strong></label>\
+                                            <br/>\
+                                            <a id=\"delete_"+ generate_id_page(page["name"]) + "_" + num_quests + "\" style=\"display:none\" class=\"delete_files\" ><i style=\"margin-right:8px;\" class=\"fa fa-close\"></i> Empty file storage</a>\
+                                        </div >\
+                                        <div class=\"text col-md-8 files_miniature\" id=\"" + generate_id_page(page["name"]) + "_" + num_quests + "_files_content\">\
+                                        <p style=\"color:#eeeeee; width: 100%; text-align:center; margin-top:16px;\">No file uploaded</p>\
+                                        </div >\
+                                        </div > ";
+                                    last_op = organize_strucuture(page, subtitle, file_upload, val[question]["type"], first_table_from_subtype, op_type, last_op, table_in);
+
+                                    //$("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append(file_upload);
+                                    $('.' + type_box_class + ' input[type="file"]').change(function (e) {
+                                        var files = this.files;
+                                        var id_question_file = $(this).attr('id') + "_files_content";
+                                        var id_delete_files = "delete_" + $(this).attr('id');
+                                        if (files) {
+                                            $('#' + id_delete_files).css('display', 'block');
+                                            $("#label_btn_" + $(this).attr('id') + " strong").html("" + files.length + " " + (files.length == 1 ? "file" : "files") + " uploaded");
+                                            $('#' + id_question_file).empty();
+                                            for (var i = 0; i < files.length; i++) {
+                                                var reader = new FileReader();
+                                                reader.onload = function (e) {
+                                                    $('#' + id_question_file).append('<img class="miniature_img" src="' + e.target.result + '" alt="your image" /> ');
+                                                }
+                                                reader.readAsDataURL(files[i]);
+                                            }
+                                        }
+                                    });
+                                    $('.' + type_box_class + ' .delete_files').click(function (e) {
+                                        var delete_btn_id = $(this).attr('id');
+                                        var btn_label_id = $(this).attr('id').split("delete_").pop();
+                                        var delete_content_id = btn_label_id + "_files_content";
+                                        $('#' + delete_content_id).empty();
+                                        $('#' + btn_label_id).val('');
+                                        $('#' + delete_btn_id).css('display', 'none');
+                                        $("#label_btn_" + btn_label_id + " strong").html("Choose a file");
+                                    });
+                                }
+                                // If question is input html
+                                else if (val[question]["type"] == "html") {
+                                    var type_box_class = "";
+                                    //if (localStorage.getItem('lastSubtitle') == first_table_from_subtype)
+                                    // type_box_class = "input_file_no_box";
+                                    // else
+                                    type_box_class = "input_file_with_box";
+                                    last_op = "html";
+                                    var normal_html = "<div class=\"input_location\" id=" + generate_id_page(page["name"]) + "_" + num_quests + ">"
+                                        + val[question]["html"].split("<!--end_div-->")[0] + "</div>";
+                                    var scripts = val[question]["html"].split("<!--end_div-->")[1];
+                                    last_op = organize_strucuture(page, subtitle, normal_html, val[question]["type"], first_table_from_subtype, op_type, last_op, table_in, add_row, trs);
+                                    $('head').append(scripts);
+                                }
+                                // If question is input radio group
+                                else if (val[question]["type"] == "radiogroup") {
                                     var tds = [];
                                     let temp_trs = "";
-                                    let op_type = "";
                                     for (var op = 0; op < val[question]["choices"].length; op++) {
                                         tds.push("<td>\
                                                 <div class=\"radio\">\
-                                                    <input type=\"radio\" id=\""+ generate_id_page(page["name"]) + "_" + num_quests + "\" name=\"opt_" + generate_id_page(page["name"]) + "_" + num_quests + "\" value=" + val[question]["choices"][op]["value"] + " >\
-                                                </div >\
+                                                    <label class=\"container_radio\">\
+                                                        <input type=\"radio\" id=\""+ generate_id_page(page["name"]) + "_" + num_quests + "\" name=\"opt_" + generate_id_page(page["name"]) + "_" + num_quests + "\" value=" + val[question]["choices"][op]["value"] + " >\
+                                                        <span class=\"checkmark\"></span>\
+                                                    </label>\
+                                                    </div >\
                                             </td > ");
                                         temp_trs += "<th scope=\"col\">" + val[question]["choices"][op]["text"] + "</th>";
                                     }
@@ -285,63 +480,10 @@ ckan.module('actions_resource', function ($) {
 
                                     //Variable with the question row code
                                     var add_row = "<tr>\
-                                        <th scope=\"row\">"+ val[question]["title"] + (is_required == true ? "*" : "") + "</th>" + tds + "\
+                                        <th scope=\"row\">"+ val[question]["title"] + (is_required == true ? "<span style=\"color:red\">*</span>" : "") + "</th>" + tds + "\
                                         </tr>";
 
-                                    var id_table = "";
-                                    //In case of table were already created
-                                    if ((table_in == localStorage.getItem('last_table_in') || "") && last_op == op_type) {
-                                        if ("description" in val[question] && val[question]["description"] == localStorage.getItem('atual_table_description')) {
-                                            //if last options used its equal to actual options
-                                            //just add row to the table
-                                            id_table = table_in + "_" + localStorage.getItem('num_tables');
-                                            $("#" + id_table + " tbody").append(add_row);
-                                        }
-                                        else if ("description" in val[question]) {
-                                            localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
-                                            id_table = table_in + "_" + localStorage.getItem('num_tables');
-                                            $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
-                                                    <div class=\"panel-heading\">" + generate_subtitle_of_question(val[question], subtitle) + "</div>");
-
-                                            $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
-                                                    <table class=\"table\" id=\"" + id_table + "\">\
-                                                    <thead></thead><tbody></tbody></table>");
-                                            $("#" + id_table + " thead").append(trs);
-                                            $("#" + id_table + " tbody").append(add_row);
-                                            localStorage.setItem('last_table_in', table_in);
-                                            last_op = op_type.toLowerCase();
-                                            localStorage.setItem('atual_table_description', val[question]["description"]);
-                                        }
-                                        else {
-                                            //if last options used its equal to actual options
-                                            //just add row to the table
-                                            id_table = table_in + "_" + localStorage.getItem('num_tables');
-                                            $("#" + id_table + " tbody").append(add_row);
-                                        }
-                                    }
-                                    //Create table and add all the tags and information needed 
-                                    else {
-
-                                        if (first_table_from_subtype == true) {
-                                            $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("<p class=\"subtypes\">" + subtitle + "</p>");
-                                            first_table_from_subtype = false;
-                                        }
-                                        localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
-                                        id_table = table_in + "_" + localStorage.getItem('num_tables');
-                                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
-                                                <div class=\"panel-heading\">" + generate_subtitle_of_question(val[question], subtitle) + "</div>");
-
-                                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("\
-                                                <table class=\"table\" id=\"" + id_table + "\">\
-                                                <thead></thead><tbody></tbody></table>");
-                                        $("#" + id_table + " thead").append(trs);
-                                        $("#" + id_table + " tbody").append(add_row);
-                                        localStorage.setItem('last_table_in', table_in);
-                                        last_op = op_type.toLowerCase();
-                                        if ("description" in val[question])
-                                            localStorage.setItem('atual_table_description', val[question]["description"]);
-
-                                    }
+                                    last_op = organize_strucuture(page, subtitle, val[question], val[question]["type"], first_table_from_subtype, op_type, last_op, table_in, add_row, trs);
                                 }
 
                                 num_quests += 1;
@@ -350,6 +492,7 @@ ckan.module('actions_resource', function ($) {
                             localStorage.setItem('num_tables', parseInt(0));
                             localStorage.setItem('last_table_in', "");
                             localStorage.setItem('atual_table_description', "");
+                            localStorage.setItem('opts', []);
                         }
 
                     });
@@ -357,6 +500,48 @@ ckan.module('actions_resource', function ($) {
 
                 }
                 divs_modules.push(generate_id_page(page["name"]));
+            }
+
+            function is_all_fill() {
+                let filled = true;
+
+                // Radio group questions
+                if (filled && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody').length > 0) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody tr').each(function () {
+                        if ((!$(this).find('input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
+                            filled = false;
+                        }
+                    });
+                }
+
+                // Input text questions
+                if (filled && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text').length > 0) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text ').each(function () {
+                        if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
+                            filled = false;
+                        }
+                    });
+                }
+
+                // Files questions
+                if (filled && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_file_with_box').length > 0) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_file_with_box ').each(function () {
+                        var question_label = "input_file_question";
+                        if (($(this).find('input[type="file"]')[0].files.length === 0) && ($(this).find('#' + question_label).text().slice(-1) == "*")) {
+                            filled = false;
+                        }
+                    });
+                }
+
+                // HTML questions
+                if (filled && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location').length > 0) {
+                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location ').each(function () {
+                        if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
+                            filled = false;
+                        }
+                    });
+                }
+                return filled;
             }
 
             // Add questionnaire type to the form title
@@ -384,23 +569,10 @@ ckan.module('actions_resource', function ($) {
             //Function on clicking in button "Next"
             $("#next_quest").on("click", function () {
                 let all_fill = true;
+
                 //Verify if this module its totally filled
-                if ($('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody tr').each(function () {
-                        if ((!$(this).find('input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
-                            all_fill = false;
-                            return all_fill;
-                        }
-                    });
-                }
-                if (all_fill && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text ').each(function () {
-                        if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
-                            all_fill = false;
-                            return all_fill;
-                        }
-                    });
-                }
+                all_fill = is_all_fill();
+
                 //If module is totally filled
                 if (all_fill) {
                     $("#" + divs_modules[(count_clicks)] + "_quest").css("display", "none");
@@ -428,23 +600,10 @@ ckan.module('actions_resource', function ($) {
             //Function on clicking in button "Finalize"
             $("#finalize_quest").on("click", function () {
                 let all_fill = true;
+
                 //Verify if this module its totally filled
-                if ($('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default tbody tr').each(function () {
-                        if ((!$(this).find('input[type="radio"]').is(":checked")) && ($(this).find('th').text().slice(-1) == "*")) {
-                            all_fill = false;
-                            return all_fill;
-                        }
-                    });
-                }
-                if (all_fill && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_text ').each(function () {
-                        if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
-                            all_fill = false;
-                            return all_fill;
-                        }
-                    });
-                }
+                all_fill = is_all_fill();
+
                 //If module is totally filled
                 if (all_fill) {
                     $("#" + divs_modules[(divs_modules.length - 1)] + "_quest").css("display", "none");
