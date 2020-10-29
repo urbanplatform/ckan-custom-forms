@@ -13,11 +13,9 @@ from flask import Blueprint, request
 
 # Converters imports
 import ast
-import json
 
 # Collection import (order)
 from collections import OrderedDict
-
 
 # Blueprint
 questionnaire = Blueprint("questionnaire", __name__)
@@ -75,9 +73,35 @@ def get_key(context, data_dict=None):
             return {"user_logged": user_logged}
 
 
+@toolkit.side_effect_free
+def get_key_worker(context, data_dict=None):
+    """Method to handle the admin API KEY to worker rabbit
+
+    Arguments:
+        context (dict): contains several objects: user logged,
+        session, apikey, api version and model
+
+        data_dict (dict): contains all the data sended in the
+        request
+
+    Returns:
+        key (dict) : It returns a dictionary with the key
+    """
+    secret_word = data_dict.pop("key_word", "")
+    if secret_word and secret_word == "ckan_key_!23_Secret":
+        # Initialize variable to have direct access to dabatase
+        # Its used to do read requests only
+        model = context["model"]
+
+        user_admin = model.Session.query(model.User).filter(model.User.sysadmin).first()
+
+        if user_admin:
+            return {"key": user_admin.apikey}
+
+
 # @toolkit.side_effect_free
 def insert_quests(context, data_dict=None):
-    """Method to enable members to submit questionnaires and add them into a
+    """Method to enable members and non members to submit questionnaires and add them into a
     specific resource.
     By getting the dataset creator id, we are able to do a temporary login and
     get the apikey.
@@ -98,14 +122,25 @@ def insert_quests(context, data_dict=None):
         of the a specific resource or not. If the resource exists, it returns
         the modified data object, otherwise it returns the newly created data object
     """
+    # Final json data
+    data_json = request.form.to_dict()
     # Get the name of the resource and organization
-    name_resource = data_dict.pop("name_resource", None)
-    organization_id = data_dict.pop("organization_id", None)
-
+    name_resource = data_json.pop("name_resource", None).replace('"', "")
+    name_resource = (
+        name_resource.split(".")[0] if "." in name_resource else name_resource
+    )
+    organization_id = data_json.pop("organization_id", None)
     # Initialize variable to have direct access to dabatase
     # Its used to do read requests only
     model = context["model"]
     if organization_id:
+        # Get the organization object
+        organization = (
+            model.Session.query(model.Group)
+            .filter(model.Group.is_organization)
+            .filter(model.Group.id == str(organization_id))
+            .first()
+        )
         # check if organization has dataset to store data
         dataset_in = (
             model.Session.query(model.Package)
@@ -118,7 +153,7 @@ def insert_quests(context, data_dict=None):
         new_dataset = None
         if not dataset_in:
             data_dataset = {
-                "title": "Questionnaires Data Submitted",
+                "title": organization.name + " - Questionnaires Data Submitted",
                 "name": "questionnaires-data-submitted-" + organization_id + "",
                 "owner_org": organization_id,
                 "private": "true",
@@ -146,7 +181,8 @@ def insert_quests(context, data_dict=None):
             .first()
         )
         # Convert the data received into a dictionary
-        result = ast.literal_eval(json.dumps(data_dict["result"]))
+        result = ast.literal_eval(data_json["result"])
+
         # Order the dictionary in two phases : by the last word in the in the
         # key string (reverse); by the first word in the key string joined
         # with the number in the key string (in case of neither of this
@@ -154,7 +190,7 @@ def insert_quests(context, data_dict=None):
         ordered_result = OrderedDict(
             sorted(
                 sorted(
-                    ast.literal_eval(result).items(),
+                    result.items(),
                     key=lambda s: (
                         s[0].split("_")[-1]
                         if "_" in s[0] and len(s[0].split("_")) > 2
@@ -178,8 +214,9 @@ def insert_quests(context, data_dict=None):
         )
         # If resource exists update it with the new submitted questionnaire
         if resource:
+            # print(resource.id.encode("utf-8"), [ordered_result])
             data_to_send = {
-                "resource_id": resource.id.encode("utf-8"),
+                "resource_id": str(resource.id),
                 "force": "true",
                 "method": "insert",
                 "records": [ordered_result],
@@ -187,7 +224,6 @@ def insert_quests(context, data_dict=None):
             insert_quest = toolkit.get_action("datastore_upsert")(
                 context={"ignore_auth": "true"}, data_dict=data_to_send,
             )
-
             return insert_quest
         else:
             if new_dataset:
@@ -209,7 +245,7 @@ def insert_quests(context, data_dict=None):
             if dataset:
                 data_to_send = {
                     "resource": {
-                        "package_id": name_package,
+                        "package_id": str(name_package),
                         "name": name_resource,
                         "format": "json",
                     },
@@ -217,10 +253,10 @@ def insert_quests(context, data_dict=None):
                     "method": "insert",
                     "records": [ordered_result],
                 }
+
                 create_resource_and_insert_quest = toolkit.get_action(
                     "datastore_create"
                 )(context={"ignore_auth": "true"}, data_dict=data_to_send,)
-
                 return create_resource_and_insert_quest
             else:
                 return {
@@ -322,5 +358,5 @@ class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             "get_key": get_key,
             "insert_quests": insert_quests,
             "get_user_role": get_user_role,
+            "get_key_worker": get_key_worker,
         }
-
