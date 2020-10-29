@@ -19,7 +19,7 @@ ckan.module('form_submit', function ($) {
 
             // CKAN user apikey
             var api_ckan_key = "";
-            var username = "----";
+            var username = "anonymous";
             // Ajax request (GET) to get apikey from the logged user
             $.ajax({
                 url: url + 'api/3/action/get_key',
@@ -139,6 +139,7 @@ ckan.module('form_submit', function ($) {
             $("#submitForm").click(function () {
                 // Get the type of questionnaire string from the title
                 var type_quest = $("#form-title").text().toLowerCase().split("-")[1].trim().split(" ").join("_")
+                var formData_send = new FormData();
                 // Hide div with the final state's text of the questionnaire
                 $("#finish_quest").css("display", "none");
                 // Show loader
@@ -222,13 +223,19 @@ ckan.module('form_submit', function ($) {
 
                     }));
 
+                    formData_send.append("name_resource", type_quest);
+                    formData_send.append("organization_id", organization_id);
+                    formData_send.append("result", JSON.stringify(final_json_to_send));
                     // Ajax request (GET) to call custom request to create and/or insert submitted questionnaires
                     $.ajax({
                         url: url + 'api/3/action/insert_quests',
                         type: 'POST',
-                        data: JSON.stringify({ "name_resource": type_quest, "organization_id": organization_id, "result": JSON.stringify(final_json_to_send) }),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
+                        data: formData_send,
+                        contentType: false, // NEEDED
+                        processData: false, // NEEDED
+                        // data: JSON.stringify({ "name_resource": type_quest, "organization_id": organization_id, "result": JSON.stringify(final_json_to_send) }),
+                        // dataType: "json",
+                        // contentType: "application/json; charset=utf-8",
                         success: function (data) {
                             console.log(data);
                             window.location.href = "/";
