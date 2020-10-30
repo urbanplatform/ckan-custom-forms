@@ -24,7 +24,6 @@ ckan.module('form_submit', function ($) {
             // Global vars
             var is_file_data = false;
             var dataset_files_id = "";
-
             // Ajax request (GET) to get apikey from the logged user
             $.ajax({
                 url: url + 'api/3/action/get_key',
