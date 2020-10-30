@@ -40,7 +40,10 @@ ckan.module('actions_resource', function ($) {
                         data: { "dataset_id": dataset_id },
                         contentType: "application/json",
                         success: function (data) {
-                            role_user = data.result["user_role"];
+                            if (data.result && data.result.hasOwnProperty("user_role") && data.result["user_role"])
+                                role_user = data.result["user_role"];
+                            else
+                                role_user = "member";
                             // Ajax request (GET) to get resource data
                             $.ajax({
                                 url: url + 'dataset/' + dataset_id + '/resource/' + resource_id + '/download/' + type_quest,
@@ -306,20 +309,20 @@ ckan.module('actions_resource', function ($) {
                     localStorage.setItem('last_table_in', table_in);
                     last_op = "text_question";
                 }
-                else if (type_question == "html") {
-                    if (parseInt(localStorage.getItem('num_tables')) == 0)
-                        localStorage.setItem('lastSubtitle', '');
+                // else if (type_question == "html") {
+                //     if (parseInt(localStorage.getItem('num_tables')) == 0)
+                //         localStorage.setItem('lastSubtitle', '');
 
-                    if (localStorage.getItem('lastSubtitle') != first_table_from_subtype) {
-                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("<div id=\"group_" + transform_subtitle_id(subtitle) + "\" class=\"radio_group_questions\"</div>");
-                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("<p class=\"subtypes\">" + subtitle + "</p>");
-                        localStorage.setItem('lastSubtitle', first_table_from_subtype);
-                    }
-                    localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
-                    $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append(html_text);
-                    localStorage.setItem('last_table_in', table_in);
-                    last_op = "html_question";
-                }
+                //     if (localStorage.getItem('lastSubtitle') != first_table_from_subtype) {
+                //         $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("<div id=\"group_" + transform_subtitle_id(subtitle) + "\" class=\"radio_group_questions\"</div>");
+                //         $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("<p class=\"subtypes\">" + subtitle + "</p>");
+                //         localStorage.setItem('lastSubtitle', first_table_from_subtype);
+                //     }
+                //     localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
+                //     $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append(html_text);
+                //     localStorage.setItem('last_table_in', table_in);
+                //     last_op = "html_question";
+                // }
 
                 return last_op
             }
@@ -437,20 +440,20 @@ ckan.module('actions_resource', function ($) {
                                         $("#label_btn_" + btn_label_id + " strong").html("Choose a file");
                                     });
                                 }
-                                // If question is input html
-                                else if (val[question]["type"] == "html") {
-                                    var type_box_class = "";
-                                    //if (localStorage.getItem('lastSubtitle') == first_table_from_subtype)
-                                    // type_box_class = "input_file_no_box";
-                                    // else
-                                    type_box_class = "input_file_with_box";
-                                    last_op = "html";
-                                    var normal_html = "<div class=\"input_location\" id=" + generate_id_page(page["name"]) + "_" + num_quests + ">"
-                                        + val[question]["html"].split("<!--end_div-->")[0] + "</div>";
-                                    var scripts = val[question]["html"].split("<!--end_div-->")[1];
-                                    last_op = organize_strucuture(page, subtitle, normal_html, val[question]["type"], first_table_from_subtype, op_type, last_op, table_in, add_row, trs);
-                                    $('head').append(scripts);
-                                }
+                                // // If question is input html
+                                // else if (val[question]["type"] == "html") {
+                                //     var type_box_class = "";
+                                //     //if (localStorage.getItem('lastSubtitle') == first_table_from_subtype)
+                                //     // type_box_class = "input_file_no_box";
+                                //     // else
+                                //     type_box_class = "input_file_with_box";
+                                //     last_op = "html";
+                                //     var normal_html = "<div class=\"input_location\" id=" + generate_id_page(page["name"]) + "_" + num_quests + ">"
+                                //         + val[question]["html"].split("<!--end_div-->")[0] + "</div>";
+                                //     var scripts = val[question]["html"].split("<!--end_div-->")[1];
+                                //     last_op = organize_strucuture(page, subtitle, normal_html, val[question]["type"], first_table_from_subtype, op_type, last_op, table_in, add_row, trs);
+                                //     $('head').append(scripts);
+                                //}
                                 // If question is input radio group
                                 else if (val[question]["type"] == "radiogroup") {
                                     var tds = [];
@@ -534,13 +537,13 @@ ckan.module('actions_resource', function ($) {
                 }
 
                 // HTML questions
-                if (filled && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location ').each(function () {
-                        if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
-                            filled = false;
-                        }
-                    });
-                }
+                // if (filled && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location').length > 0) {
+                //     $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location ').each(function () {
+                //         if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
+                //             filled = false;
+                //         }
+                //     });
+                // }
                 return filled;
             }
 

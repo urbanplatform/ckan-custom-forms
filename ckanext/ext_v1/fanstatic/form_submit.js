@@ -272,8 +272,9 @@ ckan.module('form_submit', function ($) {
                                 form_file_data.append($("#" + key_opt + "").prop('files')[i]["name"], $("#" + key_opt + "").prop('files')[i]);
                             }
                             form_file_data.append("organization_id", organization_id);
-                            // Ajax request (GET) to call custom request to create and/or insert submitted questionnaires
+                            // Ajax request (POST) to call custom request to store files uploaded
                             $.ajax({
+                                async: false,
                                 url: url + 'api/3/action/create_dataset_files_resource',
                                 type: 'POST',
                                 data: form_file_data,
@@ -288,23 +289,24 @@ ckan.module('form_submit', function ($) {
 
                         }
                     });
-                    // For geo location. Here is stored the pointfield
-                    $("#" + key + " #all_tables .input_location").each(function () {
-                        // Get id row
-                        var key_opt = $(this).attr("id");
-                        list_with_all_questions_and_answers_ids.push(key_opt + "_question");
-                        list_with_all_questions_and_answers_ids.push(key_opt + "_answer");
-                        if ($(this).find('textarea').val() != "") {
-                            // Get question
-                            var row_question = $(this).find('label').text().replace('\t', '').replace('*', '');
-                            // Get answer
-                            var answer_location_arr = unescape(encodeURIComponent($(this).find('textarea').val())); //.split("<br>");
-                            // var final_answer_location = { "longitude": parseFloat(answer_location_arr[0].split(" ")[1]), "latitude": parseFloat(answer_location_arr[1].split(" ")[1]) }
-                            // Define data structure of questions/answers
-                            questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: answer_location_arr });// JSON.stringify(final_answer_location) });
-                        }
 
-                    });
+                    // For geo location. Here is stored the pointfield
+                    // $("#" + key + " #all_tables .input_location").each(function () {
+                    //     // Get id row
+                    //     var key_opt = $(this).attr("id");
+                    //     list_with_all_questions_and_answers_ids.push(key_opt + "_question");
+                    //     list_with_all_questions_and_answers_ids.push(key_opt + "_answer");
+                    //     if ($(this).find('textarea').val() != "") {
+                    //         // Get question
+                    //         var row_question = $(this).find('label').text().replace('\t', '').replace('*', '');
+                    //         // Get answer
+                    //         var answer_location_arr = unescape(encodeURIComponent($(this).find('textarea').val())); //.split("<br>");
+                    //         // var final_answer_location = { "longitude": parseFloat(answer_location_arr[0].split(" ")[1]), "latitude": parseFloat(answer_location_arr[1].split(" ")[1]) }
+                    //         // Define data structure of questions/answers
+                    //         questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: answer_location_arr });// JSON.stringify(final_answer_location) });
+                    //     }
+
+                    // });
                 });
 
                 setTimeout(function () {
@@ -352,7 +354,7 @@ ckan.module('form_submit', function ($) {
                     formData_send.append("name_resource", type_quest);
                     formData_send.append("organization_id", organization_id);
                     formData_send.append("result", JSON.stringify(final_json_to_send));
-                    // Ajax request (GET) to call custom request to create and/or insert submitted questionnaires
+                    // Ajax request (POST) to call custom request to create and/or insert submitted questionnaires
                     $.ajax({
                         url: url + 'api/3/action/insert_quests',
                         type: 'POST',
@@ -367,6 +369,7 @@ ckan.module('form_submit', function ($) {
                             window.location.href = "/";
                         }
                     });
+
                 }, 3000);
             });
         }

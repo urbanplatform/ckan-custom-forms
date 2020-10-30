@@ -126,6 +126,9 @@ def insert_quests(context, data_dict=None):
     data_json = request.form.to_dict()
     # Get the name of the resource and organization
     name_resource = data_json.pop("name_resource", None)
+    name_resource = (
+        name_resource.split(".")[0] if "." in name_resource else name_resource
+    )
     organization_id = data_json.pop("organization_id", None)
     # Initialize variable to have direct access to dabatase
     # Its used to do read requests only
@@ -172,9 +175,13 @@ def insert_quests(context, data_dict=None):
         resource = (
             model.Session.query(model.Resource)
             .join(model.Package)
+            .join(model.PackageExtra)
             .filter(model.Resource.name == name_resource)
             .filter(model.Resource.state == "active")
             .filter(model.Package.state == "active")
+            .filter(model.PackageExtra.key == "is_data_store")
+            .filter(model.PackageExtra.value == "true")
+            .filter(model.Package.owner_org == organization_id)
             .first()
         )
         # Convert the data received into a dictionary
@@ -241,13 +248,8 @@ def insert_quests(context, data_dict=None):
             # Create resource and insert the submitted questionnaire on it
             if dataset:
                 data_to_send = {
-                    "resource": {
-                        "package_id": name_package,
-                        "name": name_resource,
-                        "format": "json",
-                    },
+                    "resource": {"package_id": name_package, "name": name_resource},
                     "force": "true",
-                    "method": "insert",
                     "records": [ordered_result],
                 }
 
@@ -353,10 +355,8 @@ def create_dataset_files_resource(context, data_dict=None):
             create_file_resource = toolkit.get_action("resource_create")(
                 context={"ignore_auth": "true"}, data_dict=data_to_send
             )
-            print(create_file_resource)
             # Append the object to the list
-            urls.append({file_img_k: str(create_file_resource["url"] + " ")})
-            print(urls)
+            urls.append(create_file_resource["url"])
         return {"urls": urls}
     else:
         return {
