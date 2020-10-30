@@ -129,7 +129,7 @@ ckan.module('list_questionnaires', function ($) {
                      */
                     function define_subtitle(dataset) {
                         $("#list-quests").append("\
-                            <div style=\" border-bottom: 1px solid grey; \">\
+                            <div style=\" margin-bottom:40px; \">\
                             <h1 style=\"display:inline; text-decoration: underline;\">"+ dataset.organization.name + "</h1><h2 style=\"display:inline\"> - " + dataset.title + "</h2>\
                             <div id=\""+ dataset.name + "\"></div>\
                             </div>");

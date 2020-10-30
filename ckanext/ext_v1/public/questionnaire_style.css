@@ -1,14 +1,67 @@
-table, th, td {
-    border: 1px solid black;
-  }
 
 td, th{
     text-align: center; 
+    vertical-align: inherit !important;
+    font-size: 16px;
 }
+
+tbody th {
+    text-align: left; 
+    vertical-align: inherit !important;
+    font-size: 16px;
+}
+
+tbody > tr{
+    background-color: rgba(107, 107, 107, 0.05);
+}
+
+.container_radio{
+    display: block;
+    cursor: pointer;
+    width: 100%;
+}
+.radio input[type="radio"]{
+    position: relative;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkmark {
+    position: absolute;
+    top: 2px;
+    height: 25px;
+    width: 25px;
+    background-color: white;
+    border: 1px solid #c5c5c5;
+    border-radius: 999px;
+    display:flex;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* On mouse-over, add a grey background color */
+.container_radio:hover input ~ .checkmark {
+    box-shadow: 0 0 2px 8px rgba(26, 134, 167, 0.30);
+    border: none;
+  }
+  
+  /* When the checkbox is checked, add a blue background */
+  .container_radio input:checked ~ .checkmark {
+    background-color: white;
+    border: 6px solid #005d7a
+  }
+  
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
 
 table {
     table-layout: auto;
     margin-bottom: 24px !important;
+    border: none;
 }
 
 input {
@@ -22,10 +75,14 @@ input {
 }
 
 .subtypes{
-    color:#005d7a;
+    color:white;
     font-weight:bold;
-    font-size: 16px;
-    margin-top: 24px;
+    font-size: 18px;
+    margin-top: 16px;
+    width: 100%;
+    background-color: #005d7a;
+    margin-bottom: 16px;
+    padding: 16px;
 }
 
 .subtypes-sub{
@@ -55,12 +112,94 @@ input {
     margin-top: 24px;
 }
 
-.input_text{
-    padding: 16px 0 16px 0;
-    border: 1px solid;
+.input_text_no_box{
+    padding: 24px;
+    border: 1px solid #eeeeee;
+    border-radius: 32px;
     margin-right: 0 !important;
     margin-left: 0 !important;
     margin-bottom: 24px;
+    box-shadow: 0 0 6px 3px rgba(107, 107, 107, 0.13);
+    overflow: hidden;
+}
+
+.input_text_with_box{
+    padding: 24px 8px 24px 8px;
+    overflow: hidden;
+}
+
+.text_area_input_text, .text_area_input_text:focus, .text_area_input_text::selection{
+    width:100%;
+    resize: none;
+    border: none;
+    border-bottom: 1px solid #eeeeee;
+    outline: none;
+    overflow: hidden;
+}
+
+.input_file_no_box{
+    padding: 24px;
+    border: 1px solid #eeeeee;
+    border-radius: 32px;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    margin-bottom: 24px;
+    box-shadow: 0 0 6px 3px rgba(107, 107, 107, 0.13);
+}
+
+.input_file_with_box{
+    padding: 24px 8px 24px 8px;
+}
+
+.file_choose_btn{
+    margin-top: 16px;
+    width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.file_choose_btn + label {
+    font-size: 16px !important;
+    color: white;
+    background-color: #005d7a;
+    display: inline-block;
+    cursor: pointer; /* "hand" cursor */
+    padding: 8px 16px 8px 16px;
+    border-radius: 10px;
+    margin-left: 16px;
+    outline: none;
+}
+
+label:after {
+    content: "" !important;
+}
+
+.file_choose_btn:focus + label{
+    border:1px solid #005d7a;
+}
+
+.file_choose_btn + label:hover {
+    background-color: white;
+    color: #005d7a;
+    border:1px solid #005d7a;
+}
+
+.files_miniature {
+    border: 1px solid #eeeeee;
+    border-radius: 32px;
+    height: 100px;
+    overflow-x: auto;
+    display: flex;
+}
+
+.miniature_img{
+    max-height: 90px;
+    width: 90px;
+    margin: 8px;
+    border:1px solid #005d7a;
 }
 
 @media only screen and (max-width: 767px) {
@@ -72,4 +211,44 @@ input {
 .dataset-list{
     max-height: 35vh;
     overflow-y: auto;
+}
+
+.mapboxgl-canvas {
+    height: 100% !important;
+    width: 100% !important;
+    }
+
+#all_tables .panel-default {
+    border: none;
+}
+
+.panel-default label {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.radio_group_questions{
+    padding: 24px;
+    border: 1px solid #eeeeee;
+    border-radius: 32px;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    margin-bottom: 24px;
+    box-shadow: 0 0 6px 3px rgba(107, 107, 107, 0.13);
+}
+
+.radio_group_questions .panel-heading{
+    font-style: italic;
+    font-weight: bold;
+    text-align: center;
+}
+
+.delete_files{
+    color:red; 
+    margin-left:24px; 
+    cursor: pointer;
+}
+
+.delete_files:hover{
+    color:rgb(141, 16, 16); 
 }
