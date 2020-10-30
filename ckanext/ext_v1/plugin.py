@@ -256,7 +256,6 @@ def insert_quests(context, data_dict=None):
                 create_resource_and_insert_quest = toolkit.get_action(
                     "datastore_create"
                 )(context={"ignore_auth": "true"}, data_dict=data_to_send,)
-
                 return create_resource_and_insert_quest
             else:
                 return {
