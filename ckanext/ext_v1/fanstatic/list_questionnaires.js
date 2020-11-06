@@ -30,8 +30,7 @@ ckan.module('list_questionnaires', function ($) {
                 }
                 return "";
             }
-
-            //Ajax request (GET) to get apikey from the logged user
+            //AJAX GET request to get apikey from the logged user
             $.ajax({
                 url: url + 'api/3/action/get_key',
                 type: 'GET',
@@ -42,7 +41,7 @@ ckan.module('list_questionnaires', function ($) {
                         user = data.result["user_logged"];
 
                     let has_quests = false;
-                    //Ajax request (GET) to get all datasets and consequent resources that the logged user has access
+                    //AJAX GET request to get all datasets and consequent resources that the logged user has access
                     $.ajax({
                         url: url + 'api/3/action/current_package_list_with_resources',
                         type: 'GET',
@@ -74,9 +73,14 @@ ckan.module('list_questionnaires', function ($) {
                                 }
 
                             });
+                            // If there are no questionnaires
                             if (!has_quests) {
                                 $("#list-quests").append("There are no questionnaires available. Please try again later");
                             }
+                            // Stop loader
+                            $("#loader_list_quests").css('display', 'none')
+                            // Display list of questionnaires
+                            $("#list-quests").css('display', 'block')
                         },
                         error: function (data) {
                             console.log(data);
@@ -110,7 +114,7 @@ ckan.module('list_questionnaires', function ($) {
                             return string_field.charAt(0).toUpperCase() + string_field.slice(1);
                         }
                         else {
-                            return "Descrição disponível em breve";
+                            return "Description available soon";
                         }
                     }
 
@@ -158,14 +162,6 @@ ckan.module('list_questionnaires', function ($) {
                                 </div>\
                             </li>");
                     }
-                    //}
-                    // else {
-                    //     $("#organization-datasets").css("display", "none");
-                    //     $("#quest_section_init page-heading").text("List of questionnaires");
-                    //     $("#list-quests").append("Please log in to get access to the questionnaires");
-
-                    // }
-
                 },
                 error: function (data) {
                     console.log(data);
