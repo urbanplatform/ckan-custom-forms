@@ -108,9 +108,9 @@ ckan.module('form_submit', function ($) {
             ////Not used but kept it for future work
             function create_and_insert_first_row_into_resource(dataset_name, resource_name, final_json_to_send, list_with_all_questions_and_answers_ids, is_first = false) {
                 //Get types and consequent questions/answer keys
-                var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
+                var fields_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }];
                 list_with_all_questions_and_answers_ids.map((x => {
-                    fiels_resource.push({ "id": x });
+                    fields_resource.push({ "id": x });
                     if (is_first == true)
                         if (!final_json_to_send.hasOwnProperty(x)) {
                             final_json_to_send[x] = "";
@@ -131,7 +131,7 @@ ckan.module('form_submit', function ($) {
                             "format": "json"
                         },
                         "force": true,
-                        "fields": fiels_resource,
+                        "fields": fields_resource,
                         "records": [final_json_to_send]
                     }),
                     success: function (data) {
@@ -322,12 +322,12 @@ ckan.module('form_submit', function ($) {
                     // Final json structure
                     var final_json_to_send = { "id": type_quest, "info": type_quest + "_quest", "date_submitted": currentdate, "username": username };
                     // Fields that already exists in the final json
-                    var fiels_resource = [{ "id": "id" }, { "id": "info" }, { "id": "date_submitted" }, { "id": "username" }];
+                    var fields_resource = [{ "id": "id", "type": "text" }, { "id": "info", "type": "text" }, { "id": "date_submitted", "type": "text" }, { "id": "username", "type": "text" }];
                     // Auxiliar boolean to be able to insert the questions and answer that were answered
                     let it_has_answer = false;
 
                     list_with_all_questions_and_answers_ids.map((x => {
-                        fiels_resource.push({ "id": x });
+                        fields_resource.push({ "id": x });
                         // In case of final json doesnt contain the key 'x', add it to the final json
                         // and if has a value, associate it. Otherwise leave it blank
                         if (!final_json_to_send.hasOwnProperty(x)) {

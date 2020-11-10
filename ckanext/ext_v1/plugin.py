@@ -184,8 +184,26 @@ def insert_quests(context, data_dict=None):
             .filter(model.Package.owner_org == organization_id)
             .first()
         )
+
         # Convert the data received into a dictionary
         result = ast.literal_eval(data_json["result"])
+
+        # Get number of rows
+        if resource:
+            data_search = toolkit.get_action("datastore_search")(
+                context={"ignore_auth": "true"},
+                data_dict={
+                    "resource_id": resource.id,
+                    "q": "",
+                    "filters": {},
+                    "limit": 100,
+                    "offset": 0,
+                },
+            )
+            number_rows = data_search["total"]
+            result["id"] = result["id"] + "_" + str(number_rows + 1)
+        else:
+            result["id"] = result["id"] + "_1"
 
         # Order the dictionary in two phases : by the last word in the in the
         # key string (reverse); by the first word in the key string joined
@@ -216,6 +234,7 @@ def insert_quests(context, data_dict=None):
                 ),
             ),
         )
+
         # If resource exists update it with the new submitted questionnaire
         if resource:
             # print(resource.id.encode("utf-8"), [ordered_result])
@@ -248,9 +267,13 @@ def insert_quests(context, data_dict=None):
             # Create resource and insert the submitted questionnaire on it
             if dataset:
                 data_to_send = {
-                    "resource": {"package_id": name_package, "name": name_resource},
+                    "resource": {
+                        "package_id": str(name_package),
+                        "name": str(name_resource),
+                    },
                     "force": "true",
                     "records": [ordered_result],
+                    "primary_key": "id",
                 }
 
                 create_resource_and_insert_quest = toolkit.get_action(
