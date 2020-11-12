@@ -57,7 +57,7 @@ ckan.module('list_questionnaires', function ($) {
                                 // In case of this dataset has extras for templating, display the resources as questionnaires
                                 if (("extras" in dataset) && (dataset["extras"].length > 0)) {
                                     dataset.extras.forEach(function (extra) {
-                                        if ((extra["key"].trim() == "is_templating" && extra["value"].trim() == "true") && (dataset.resources.length > 0)) {
+                                        if ((extra["key"].trim() == "is_templating" && extra["value"].trim() == "true") && (dataset.hasOwnProperty("resources") && dataset.resources.length > 0)) {
                                             define_subtitle(dataset);
                                             has_quests = true;
                                             dataset.resources.forEach(function (resource) {
