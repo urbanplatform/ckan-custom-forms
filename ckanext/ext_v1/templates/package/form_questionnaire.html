@@ -1,19 +1,24 @@
 {% resource 'ext_v1/form_submit.js' %}
 {% resource 'ext_v1/actions_resource.js' %}
 
+<!--Questionnaires css-->
 <link rel="stylesheet" href="/questionnaire_style.css">
+<link rel="stylesheet" href="/geo_location.css">
+<link rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+    type="text/css" />
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
 
 <!--resource-edit-->
 <form id="form-target" data-module="actions_resource" class="dataset-form dataset-resource-form" method="post"
     enctype="multipart/form-data">
     <ol class="stages stage-2" id="all_stages">
-
     </ol>
-    <h3 id="form-title" style="display: block; text-align: center;">Questionnaire -
-    </h3>
-    <div class="page-loading-loader" id="loader" style="display: none ;width: 100%; height: 100%;">
+    <h1 id="form-title" class="form_title_quest">Questionnaire -
+    </h1>
+    <div class="page-loading-loader" id="loader" style="display: block ;width: 100%; height: 100%;">
         <img style="margin: auto; display: block;" src="/loader.gif" />
-        <p class="saving_loader">Saving...</p>
+        <p class="saving_loader" id="saving_loader" style="display: none;">Saving...</p>
     </div>
     <div id="text-initial-presentation" style="display: none;">
         <div class="form-group" style="text-align: center; margin: 0 32px 0 32px;">
@@ -43,7 +48,7 @@
         <p>We hope that you enjoyed our questionnaire.</p>
         <p>In case of any doubts or constructive criticism, please contact us.</p>
         <p>
-        <h3>To submit the questionnaire, save and complete it.</h3>
+        <h3>To submit the questionnaire, save and close it.</h3>
         </p>
     </div>
 
@@ -55,8 +60,35 @@
             id="forms_normal">Next</button>
         <button id="finalize_quest" type="button" style="display: none;" class="btn btn-primary"
             id="forms_normal">Finalize</button>
-        <button id="submitForm" type="button" style="display: none;" class="btn btn-primary"
-            data-module="form_submit">Save & Close</button>
+        <button id="submitForm" type="button" style="display: none;" class="btn btn-primary" data-module="form_submit"
+            data-toggle="modal" data-target="#confirmModal">Save & Close</button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="top:30vh">
+                <div class="modal-header">
+                    <h4 class="modal-title" style="text-align: center;" id="confirmModalLabel">Questionnaire Submitted
+                    </h4>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    <p>Your questionnaire has been submitted with success! </p>
+                    <p>Thank you!</p>
+                    <i class="fa fa-check-circle" style="font-size: 5em; color: green;" aria-hidden="true"></i>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" onclick="location.href='./'" style="width: 100%; padding: 8px;"
+                        data-dismiss="modal">
+                        Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
 </form>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
