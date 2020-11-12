@@ -12,8 +12,13 @@
         {% endif %}
     </header>
     <section class="group-list module module-narrow module-shallow">
+        <!-- Loader -->
+        <div class="page-loading-loader fade-out" id="loader_list_quests"
+            style="display: block ;width: auto; max-height: 25vh">
+            <img style="margin: auto; display: block; width: 300px;" src="/loader.gif" />
+        </div>
         <!-- Snippet snippets/package_list.html start -->
-        <ul data-module="list_questionnaires" class="list-unstyled dataset-list" id="list-quests">
+        <ul data-module="list_questionnaires" style="display: none" class="list-unstyled dataset-list" id="list-quests">
 
         </ul>
         <!-- Snippet snippets/package_list.html end -->
