@@ -15,6 +15,26 @@ tbody > tr{
     background-color: rgba(107, 107, 107, 0.05);
 }
 
+.form_title_quest{
+    display: block; 
+    text-align: center;
+    background-color: #005d7a;
+    border-radius: 10px;
+    color: white;
+    padding: 8px;
+}
+
+.intro_page{ 
+    text-align: center;
+    margin: 24px 0 24px 0;
+}
+
+.intro_page h3 span{ 
+    border: 2px solid #005d7a;
+    padding: 10px;
+    border-radius: 16px;
+}
+
 .container_radio{
     display: block;
     cursor: pointer;
@@ -251,4 +271,57 @@ label:after {
 
 .delete_files:hover{
     color:rgb(141, 16, 16); 
+}
+
+.fade-out {
+    animation: fadeOut ease 8s;
+    -webkit-animation: fadeOut ease 8s;
+    -moz-animation: fadeOut ease 8s;
+    -o-animation: fadeOut ease 8s;
+    -ms-animation: fadeOut ease 8s;
+}
+
+@keyframes fadeOut {
+    0% {
+      opacity:1;
+    }
+    100% {
+      opacity:0;
+    }
+}
+  
+@-moz-keyframes fadeOut {
+    0% {
+      opacity:1;
+    }
+    100% {
+      opacity:0;
+    }
+}
+  
+@-webkit-keyframes fadeOut {
+    0% {
+      opacity:1;
+    }
+    100% {
+      opacity:0;
+    }
+}
+  
+@-o-keyframes fadeOut {
+    0% {
+      opacity:1;
+    }
+    100% {
+      opacity:0;
+    }
+}
+  
+@-ms-keyframes fadeOut {
+    0% {
+      opacity:1;
+    }
+    100% {
+      opacity:0;
+  }
 }
