@@ -1,7 +1,7 @@
 /*
 This file is responsible for fill the questionnaires with the correct information. It uses a specific format for
 the different type of questions and organize it by several phases, depending on the json stored in the templating
-dataset. For now, it only accepts input text, radio buttons, files and html code (geo location only)
+dataset. For now, it only accepts input text, radio buttons and files
 */
 
 "use strict";
@@ -343,20 +343,6 @@ ckan.module('actions_resource', function ($) {
                     localStorage.setItem('last_table_in', table_in);
                     last_op = "text_question";
                 }
-                else if (type_question == "html") {
-                    if (parseInt(localStorage.getItem('num_tables')) == 0)
-                        localStorage.setItem('lastSubtitle', '');
-
-                    if (localStorage.getItem('lastSubtitle') != first_table_from_subtype) {
-                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default").append("<div id=\"group_" + transform_subtitle_id(subtitle) + "\" class=\"radio_group_questions\"</div>");
-                        $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append("<p class=\"subtypes\">" + subtitle + "</p>");
-                        localStorage.setItem('lastSubtitle', first_table_from_subtype);
-                    }
-                    localStorage.setItem('num_tables', (parseInt(localStorage.getItem('num_tables')) + 1));
-                    $("#" + generate_id_page(page["name"]) + "_quest #all_tables .panel-default #group_" + transform_subtitle_id(subtitle) + "").append(html_text);
-                    localStorage.setItem('last_table_in', table_in);
-                    last_op = "html_question";
-                }
 
                 return last_op
             }
@@ -369,9 +355,9 @@ ckan.module('actions_resource', function ($) {
                 // Add the name of the page as title and static data for a specific phase
                 $("#quest_content_form").append("\
                 <div class=\"panel-group\" id=\""+ generate_id_page(page["name"]) + "_quest\" aria-multiselectable=\"true\" style=\"display: none;\">\
-                    <h3>"+ page["name"] + "</h3>\
-                    <p>Fill the following tables with a unique response by clicking in one option per row</p>\
-                    <p class=\"questions_mandatory\">-- Questions with * are mandatory --</p>\
+                    <div class=\"intro_page\">\
+                        <h3><span>" + page["name"] + "</span></h3>\
+                    </div>\
                     <div id=\"all_tables\">\
                     <div class=\"panel panel-default\" >\
                     </div>\
@@ -474,33 +460,6 @@ ckan.module('actions_resource', function ($) {
                                         $("#label_btn_" + btn_label_id + " strong").html("Choose a file");
                                     });
                                 }
-                                // If question is input html
-                                else if (val[question]["type"] == "html") {
-                                    var type_box_class = "";
-                                    //if (localStorage.getItem('lastSubtitle') == first_table_from_subtype)
-                                    // type_box_class = "input_file_no_box";
-                                    // else
-                                    type_box_class = "input_file_with_box";
-                                    last_op = "html";
-                                    var normal_html = "<div class=\"input_location\" id=" + generate_id_page(page["name"]) + "_" + num_quests + ">"
-                                        + val[question]["html"].split("<!--end_div-->")[0] + "</div>";
-                                    var api_key_str = val[question]["html"].split("<!--end_div-->")[1];
-                                    if (api_key_str.includes("type=") && api_key_str.includes("url=") && api_key_str.includes("key=")) {
-                                        var type_geo = api_key_str.split("type=")[1].split(";")[0];
-                                        var url_geo = api_key_str.split("url=")[1].split(";")[0];
-                                        var key_geo = api_key_str.split("key=")[1].split(";")[0];
-                                        // if (key_nominatim.substring(key_nominatim.length - 1) == ";")
-                                        //     key_nominatim = key_nominatim.substring(0, key_nominatim.length - 1);
-                                        var valid_geo_fields = is_gen_geo_location(type_geo, key_geo, url_geo);
-                                        if (!valid_geo_fields)
-                                            message_bad_quest();
-
-                                    }
-                                    else
-                                        message_bad_quest();
-                                    last_op = organize_strucuture(page, subtitle, normal_html, val[question]["type"], first_table_from_subtype, op_type, last_op, table_in, add_row, trs);
-                                    //$('head').append(scripts);
-                                }
                                 // If question is input radio group
                                 else if (val[question]["type"] == "radiogroup") {
                                     var tds = [];
@@ -586,15 +545,6 @@ ckan.module('actions_resource', function ($) {
                         }
                     });
                 }
-
-                // HTML questions
-                if (filled && $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location').length > 0) {
-                    $('#' + divs_modules[count_clicks] + "_quest" + ' .panel-default .input_location ').each(function () {
-                        if (($(this).find('textarea').val() == "") && ($(this).find('label').text().slice(-1) == "*")) {
-                            filled = false;
-                        }
-                    });
-                }
                 return filled;
             }
 
@@ -609,6 +559,7 @@ ckan.module('actions_resource', function ($) {
                 $("#accordion").css("display", "none");
                 $("#second_stage").removeClass("uncomplete");
                 $("#second_stage").addClass("active");
+                $("#text-initial-presentation").css("display", "none");
                 if (num_modules <= 2)
                     $("#finalize_quest").css("display", "inline-block");
                 else

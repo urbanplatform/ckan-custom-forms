@@ -1,6 +1,5 @@
 {% resource 'ext_v1/form_submit.js' %}
 {% resource 'ext_v1/actions_resource.js' %}
-{% resource 'ext_v1/script_geo_location.js' %}
 
 <!--Questionnaires css-->
 <link rel="stylesheet" href="/questionnaire_style.css">
@@ -49,7 +48,7 @@
         <p>We hope that you enjoyed our questionnaire.</p>
         <p>In case of any doubts or constructive criticism, please contact us.</p>
         <p>
-        <h3>To submit the questionnaire, save and complete it.</h3>
+        <h3>To submit the questionnaire, save and close it.</h3>
         </p>
     </div>
 
@@ -70,15 +69,18 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content" style="top:30vh">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="confirmModalLabel">Questionnaire Submitted</h4>
+                    <h4 class="modal-title" style="text-align: center;" id="confirmModalLabel">Questionnaire Submitted
+                    </h4>
                 </div>
-                <div class="modal-body">
-                    Your questionnaire has been submitted with success! Thank you!
+                <div class="modal-body" style="text-align: center;">
+                    <p>Your questionnaire has been submitted with success! </p>
+                    <p>Thank you!</p>
+                    <i class="fa fa-check-circle" style="font-size: 5em; color: green;" aria-hidden="true"></i>
                 </div>
                 <div class="modal-footer">
-                    <a href="./"><button type="button" class="btn btn-default" data-dismiss="modal">Close</button></a>
+                    <button class="btn btn-default" onclick="location.href='./'" style="width: 100%; padding: 8px;"
+                        data-dismiss="modal">
+                        Close</button>
                 </div>
             </div>
         </div>
