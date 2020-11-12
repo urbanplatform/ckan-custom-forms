@@ -171,7 +171,7 @@ ckan.module('form_submit', function ($) {
                         contentType: false, // NEEDED
                         processData: false, // NEEDED
                         success: function (data) {
-                            console.log("OK")
+                            $('#confirmModal').modal('show');
                         }
                     });
 
