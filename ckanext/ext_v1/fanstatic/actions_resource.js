@@ -594,7 +594,8 @@ ckan.module('actions_resource', function ($) {
                     }, 1500);
                 }
                 else {
-                    alert("Answer to all the question please!");
+                    // alert("Answer to all the question please!");
+                    $('#requiredModal').modal('show');
                     return false;
                 }
             });
@@ -625,7 +626,7 @@ ckan.module('actions_resource', function ($) {
                     }, 1500);
                 }
                 else {
-                    alert("Answer to all the question please!");
+                    $('#requiredModal').modal('show');
                 }
             });
 
