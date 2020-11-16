@@ -130,6 +130,7 @@ def insert_quests(context, data_dict=None):
         name_resource.split(".")[0] if "." in name_resource else name_resource
     )
     organization_id = data_json.pop("organization_id", None)
+    files_url = data_json.pop("files_url", None)
     # Initialize variable to have direct access to dabatase
     # Its used to do read requests only
     model = context["model"]
@@ -204,6 +205,13 @@ def insert_quests(context, data_dict=None):
             result["id"] = result["id"] + "_" + str(number_rows + 1)
         else:
             result["id"] = result["id"] + "_1"
+
+        # Associate urls in the result
+        if files_url:
+            files_url = ast.literal_eval(files_url)
+            for files in files_url:
+                for urls_k, urls_v in files.items():
+                    result[urls_k] = [x.replace('"', "") for x in urls_v]
 
         # Order the dictionary in two phases : by the last word in the in the
         # key string (reverse); by the first word in the key string joined
@@ -378,8 +386,8 @@ def create_dataset_files_resource(context, data_dict=None):
                 context={"ignore_auth": "true"}, data_dict=data_to_send
             )
             # Append the object to the list
-            urls.append(create_file_resource["url"])
-        return {"urls": urls}
+            urls.append({file_img_k: create_file_resource["url"]})
+        return {"files": urls}
     else:
         return {
             "success": False,
