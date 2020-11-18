@@ -15,6 +15,22 @@ tbody > tr{
     background-color: rgba(107, 107, 107, 0.05);
 }
 
+#content{
+    min-width: 600px;
+}
+
+.account-masthead{
+    min-width: 600px;
+}
+
+.homepage{
+    min-width: 600px;
+}
+
+.masthead{
+    min-width: 550px;
+}
+
 .form_title_quest{
     display: block; 
     text-align: center;
@@ -226,7 +242,9 @@ label:after {
     .side-dataset{
         margin-top: 0 !important;
     }
+
 }
+
 
 .dataset-list{
     max-height: 35vh;
