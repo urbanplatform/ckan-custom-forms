@@ -278,6 +278,7 @@ def insert_quests(context, data_dict=None):
                     "resource": {
                         "package_id": str(name_package),
                         "name": str(name_resource),
+                        "format": "json",
                     },
                     "force": "true",
                     "records": [ordered_result],
@@ -287,6 +288,23 @@ def insert_quests(context, data_dict=None):
                 create_resource_and_insert_quest = toolkit.get_action(
                     "datastore_create"
                 )(context={"ignore_auth": "true"}, data_dict=data_to_send,)
+                print(create_resource_and_insert_quest)
+                # Remove text view if exists
+                resource_view_text = (
+                    model.Session.query(model.ResourceView)
+                    .filter(
+                        model.ResourceView.resource_id
+                        == create_resource_and_insert_quest["resource_id"]
+                    )
+                    .filter(model.ResourceView.view_type == u"text_view")
+                    .first()
+                )
+                if resource_view_text:
+                    print(resource_view_text.view_type)
+                    toolkit.get_action("resource_view_delete")(
+                        context={"ignore_auth": "true"},
+                        data_dict={"id": resource_view_text.id},
+                    )
                 return create_resource_and_insert_quest
             else:
                 return {
