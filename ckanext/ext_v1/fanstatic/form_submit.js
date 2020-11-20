@@ -104,25 +104,27 @@ ckan.module('form_submit', function ($) {
                             form_file_data.append("organization_id", organization_id);
                             let image_structure = [];
                             // AJAX POST request to call custom request to store files uploaded
-                            $.ajax({
-                                async: false,
-                                url: url + 'api/3/action/create_dataset_files_resource',
-                                type: 'POST',
-                                data: form_file_data,
-                                contentType: false, // NEEDED (requires jQuery 1.6+)
-                                processData: false, // NEEDED
-                                success: function (data) {
-                                    for (var i = 0; i < data.result["files"].length; i++) {
-                                        var key = Object.keys(data.result["files"][i])[0];
-                                        var value = data.result["files"][i][key];
-                                        image_structure.push('<a onclick="window.open(\'' + value + '\') href="' + value + '" target="_blank" rel="noopener noreferrer">' + key + '</a>')
+                            setTimeout(function () {
+                                $.ajax({
+                                    async: false,
+                                    url: url + 'api/3/action/create_dataset_files_resource',
+                                    type: 'POST',
+                                    data: form_file_data,
+                                    contentType: false, // NEEDED (requires jQuery 1.6+)
+                                    processData: false, // NEEDED
+                                    success: function (data) {
+                                        for (var i = 0; i < data.result["files"].length; i++) {
+                                            var key = Object.keys(data.result["files"][i])[0];
+                                            var value = data.result["files"][i][key];
+                                            image_structure.push('<a onclick="window.open(\'' + value + '\') href="' + value + '" target="_blank" rel="noopener noreferrer">' + key + '</a>')
+                                        }
+                                        // image_structure.push(data.result["files"][i]);
+                                        // Define data structure of questions/answers
+                                        files_url_entity.push({ [key_opt + "_answer"]: image_structure });
+                                        questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: "" });
                                     }
-                                    // image_structure.push(data.result["files"][i]);
-                                    // Define data structure of questions/answers
-                                    files_url_entity.push({ [key_opt + "_answer"]: image_structure });
-                                    questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: "" });
-                                }
-                            });
+                                });
+                            }, 0);
                         }
                     });
                 });
