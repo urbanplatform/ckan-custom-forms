@@ -8,12 +8,18 @@ ckan.module('list_questionnaires', function ($) {
     return {
         initialize: function () {
 
-            setTimeout(function () {
-                $("#cookieConsent").fadeIn(200);
-            }, 1000);
-            $("#closeCookieConsent, #consentOK").click(function () {
-                $("#cookieConsent").fadeOut(200);
-            });
+            // Verify if already accept the terms. Otherwise show popup
+            var cookieEnabled = (document.cookie.indexOf("cookie_notice_accepted") != -1) ? true : false;
+            if (!cookieEnabled) {
+                setTimeout(function () {
+                    $("#cookieConsent").fadeIn(200);
+                }, 1000);
+                $("#closeCookieConsent, #consentOK").click(function () {
+                    document.cookie = "cookie_notice_accepted=true";
+                    $("#cookieConsent").fadeOut(200);
+                });
+            }
+
 
             //Get path of url to know the type of the questionnaire
             const init_url = this.sandbox.client.endpoint;
