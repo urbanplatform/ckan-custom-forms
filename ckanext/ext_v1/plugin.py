@@ -19,6 +19,7 @@ from collections import OrderedDict
 
 # Blueprint
 questionnaire = Blueprint("questionnaire", __name__)
+gdpr = Blueprint("gdpr", __name__)
 
 # Render html page on ckan
 render = base.render
@@ -48,6 +49,18 @@ def custom_action():
             "type_quest": type_quest,
         },
     )
+
+
+# Method to be able to render GDPR on ckan
+@gdpr.route("/gdpr", endpoint="custom_action")
+def custom_action_gdpr():
+    """Method to enable GDPR render.
+
+    Returns:
+        toolkit.render: It returns an html page with the needed
+        variables
+    """
+    return toolkit.render("home/gdpr.html",)
 
 
 @toolkit.side_effect_free
@@ -487,7 +500,7 @@ class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             object or a list of Flask Blueprint objects
             to be registered by the app.
         """
-        return questionnaire
+        return [questionnaire, gdpr]
 
     def get_actions(self):
         """Create new actions/requests
