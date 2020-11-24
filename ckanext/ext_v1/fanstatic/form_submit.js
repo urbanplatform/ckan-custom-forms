@@ -10,6 +10,18 @@ the info is stored there. Otherwise, the resource is updated with a new response
 ckan.module('form_submit', function ($) {
     return {
         initialize: function () {
+            // Verify if already accept the terms. Otherwise show popup
+            var cookieEnabled = (document.cookie.indexOf("cookie_notice_accepted") != -1) ? true : false;
+            if (!cookieEnabled) {
+                setTimeout(function () {
+                    $("#cookieConsent").fadeIn(200);
+                }, 1000);
+                $("#closeCookieConsent, #consentOK").click(function () {
+                    document.cookie = "cookie_notice_accepted=true";
+                    $("#cookieConsent").fadeOut(200);
+                });
+            }
+
             // CKAN url
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
@@ -187,7 +199,7 @@ ckan.module('form_submit', function ($) {
                         }
                     });
 
-                }, 3000);
+                }, 1500);
             });
         }
     };
