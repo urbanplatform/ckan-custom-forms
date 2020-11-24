@@ -19,7 +19,7 @@ from collections import OrderedDict
 
 # Blueprint
 questionnaire = Blueprint("questionnaire", __name__)
-gdpr = Blueprint("gdpr", __name__)
+gdpr = Blueprint("privacy-policy", __name__)
 
 # Render html page on ckan
 render = base.render
@@ -52,9 +52,9 @@ def custom_action():
 
 
 # Method to be able to render GDPR on ckan
-@gdpr.route("/gdpr", endpoint="custom_action")
+@gdpr.route("/privacy-policy", endpoint="custom_action")
 def custom_action_gdpr():
-    """Method to enable GDPR render.
+    """Method to enable privacy policy render.
 
     Returns:
         toolkit.render: It returns an html page with the needed

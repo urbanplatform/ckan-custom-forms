@@ -3,7 +3,7 @@
 {% block subtitle %}{{ _('GDPR Privacy Terms') }}{% endblock %}
 
 {% block breadcrumb_content %}
-<li class="active">{% link_for _('GDPR - Privacy Terms'), 'home.gdpr' %}</li>
+<li class="active">{% link_for _('Privacy Policy - Terms and Conditions'), 'home.gdpr' %}</li>
 {% endblock %}
 
 {% block primary %}
@@ -13,7 +13,6 @@
         {% if g.site_about %}
         {{ h.render_markdown(g.site_about) }}
         {% else %}
-        <h1 class="page-heading">{{ _('Privacy Terms - GDPR') }}</h1>
         {% snippet 'snippets/about_gdpr.html' %}
         {% endif %}
         {% endblock %}
