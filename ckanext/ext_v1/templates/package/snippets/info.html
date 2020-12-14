@@ -1,19 +1,21 @@
 {#
-    Displays a sidebard module with information for given package
-    
-    pkg    - The package dict that owns the resources.
-    
-    Example:
-    
-      {% snippet "package/snippets/info.html", pkg=pkg %}
-    
-    #}
+Displays a sidebard module with information for given package
+
+pkg - The package dict that owns the resources.
+
+Example:
+
+{% snippet "package/snippets/info.html", pkg=pkg %}
+
+#}
+
+{% resource 'ext_v1/helper_dataset_logic.js' %}
 
 {% block package_info %}
 {% if pkg %}
 <link rel="stylesheet" href="/questionnaire_style.css" />
-<section class="module module-narrow">
-    <div class="module context-info">
+<section class="module module-narrow info_section">
+    <div class="module context-info info_div">
         <div class="module-content">
             {% block package_info_inner %}
             {% block heading %}
@@ -38,15 +40,15 @@
             {% endblock %}
             {% endblock %}
         </div>
-        <div class="module-content side-dataset">
+        <div data-module="helper_dataset_logic" class="module-content side-dataset" id="helper_dataset">
             <p style="margin-top: 16px; position: fixed;">
             <h3>Helper on Custom Fields</h3>
             <span class="italic-dataset-helper">Here we have all the custom fields that you can use to
                 identify your dataset.</span>
-            <table class="table-dataset">
+            <table class="table-dataset" aria-describedby="Table to describe possible custom fields from datasets">
                 <tr>
-                    <th>Key</th>
-                    <th>Possible values</th>
+                    <th id="info_dataset_key">Key</th>
+                    <th id="info_dataset_values">Possible values</th>
                 </tr>
                 <tr>
                     <td>is_templating</td>
@@ -58,6 +60,10 @@
                 </tr>
                 <tr>
                     <td>is_patient_store</td>
+                    <td>true or false</td>
+                </tr>
+                <tr>
+                    <td>is_eu_survey</td>
                     <td>true or false</td>
                 </tr>
             </table>
@@ -72,6 +78,10 @@
             <p><span style="font-weight: bold;">is_patient_store</span>
                 - This field has the purpose of defining a dataset as a
                 data store from the uploaded patients files.
+            </p>
+            <p><span style="font-weight: bold;">is_eu_survey</span>
+                - This field has the purpose of defining a dataset as a
+                data store to EUSurvey questionnaire responses.
             </p>
 
             </p>

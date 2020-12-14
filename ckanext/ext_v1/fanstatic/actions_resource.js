@@ -456,7 +456,7 @@ ckan.module('actions_resource', function ($) {
                                             for (var i = 0; i < files.length; i++) {
                                                 var reader = new FileReader();
                                                 reader.onload = function (e) {
-                                                    $('#' + id_question_file).append('<img class="miniature_img" src="' + e.target.result + '" alt="your image" /> ');
+                                                    $('#' + id_question_file).append('<img class="miniature_img" src="' + e.target.result + '" alt="Image to Upload" /> ');
                                                 }
                                                 reader.readAsDataURL(files[i]);
                                             }

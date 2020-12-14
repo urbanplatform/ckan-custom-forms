@@ -133,8 +133,15 @@ input {
     margin-top: 32px;
 }
 
+.info_div{
+    display: flex;
+    flex-direction: column;
+    height: 80vw;
+}
+
 .side-dataset{
-    margin-top: 1100px !important;
+    /* margin-top: 1100px !important; */
+    margin-top: auto !important;
 }
 
 .italic-dataset-helper{
@@ -245,6 +252,13 @@ label:after {
 
 }
 
+
+@media only screen and (max-width: 650px) {
+    .info_section{
+        margin-bottom: 200px;
+    }
+
+}
 
 .dataset-list{
     max-height: 35vh;
