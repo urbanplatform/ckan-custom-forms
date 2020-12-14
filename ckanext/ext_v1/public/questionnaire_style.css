@@ -15,6 +15,22 @@ tbody > tr{
     background-color: rgba(107, 107, 107, 0.05);
 }
 
+#content{
+    min-width: 600px;
+}
+
+.account-masthead{
+    min-width: 600px;
+}
+
+.homepage{
+    min-width: 600px;
+}
+
+.masthead{
+    min-width: 550px;
+}
+
 .form_title_quest{
     display: block; 
     text-align: center;
@@ -117,8 +133,15 @@ input {
     margin-top: 32px;
 }
 
+.info_div{
+    display: flex;
+    flex-direction: column;
+    height: 80vw;
+}
+
 .side-dataset{
-    margin-top: 1100px !important;
+    /* margin-top: 1100px !important; */
+    margin-top: auto !important;
 }
 
 .italic-dataset-helper{
@@ -226,6 +249,15 @@ label:after {
     .side-dataset{
         margin-top: 0 !important;
     }
+
+}
+
+
+@media only screen and (max-width: 650px) {
+    .info_section{
+        margin-bottom: 200px;
+    }
+
 }
 
 .dataset-list{
@@ -325,3 +357,74 @@ label:after {
       opacity:0;
   }
 }
+
+/*Cookie Consent Begin*/
+#cookieConsent {
+    background-color: rgba(20,20,20,0.8);
+    min-height: 75px;
+    font-size: 14px;
+    color: #ccc;
+    line-height: 26px;
+    padding: 25px 0 0 30px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    z-index: 9999;
+}
+#cookieConsent a {
+    color: #4B8EE7;
+    text-decoration: none;
+}
+#closeCookieConsent {
+    float: right;
+    cursor: pointer;
+    font-weight: bold;
+    padding-right: 30px;
+}
+
+.close-fa{
+    color: lightgrey; 
+    font-size: 25px;
+}
+
+.close-fa:hover {
+    color: #FFF;
+}
+
+#cookieConsent a.cookieConsentOK {
+    background-color: #005d7a;
+    color: #FFF;
+    border-radius: 8px;
+    padding: 8px 20px;
+    cursor: pointer;
+    margin: -5px 0px 0 10px;
+}
+
+#cookieConsent a.cookieConsentOK:hover {
+    background-color: #003647;
+}
+
+.text-display, .btns-display {
+    display: inline-block;
+}
+
+@media only screen and (max-width: 1268px) {
+    .text-display {
+        display: block;
+    }
+
+    .btns-display {
+        display: inline-block;
+        margin-top: 8px;
+    }
+
+    .close-display {
+        display: block;
+        position: relative;
+        top: -35px;
+    }
+
+}
+/*Cookie Consent End*/

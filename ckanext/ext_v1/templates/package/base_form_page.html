@@ -12,8 +12,8 @@
         {% block primary_content_inner %}
         {% block form %}
         {#- passing c to a snippet is bad but is required here
-              for backwards compatibility with old templates and
-              plugins using setup_template_variables() -#}
+        for backwards compatibility with old templates and
+        plugins using setup_template_variables() -#}
         {{- h.snippet(form_snippet, c=c, **form_vars) -}}
         {% endblock %}
         {% endblock %}
@@ -23,8 +23,9 @@
 
 {% block secondary_content %}
 {% block info_module %}
-<section class="module module-narrow module-shallow">
-    <h2 class="module-heading"><i class="fa fa-info-circle"></i> {{ _('What are datasets?') }}</h2>
+<section class="module module-narrow module-shallow info_section info_div">
+    <h2 id="what_databases_base" class="module-heading"><em class="fa fa-info-circle"></em>
+        {{ _('What are datasets?') }}</h2>
     <div class="module-content">
         <p>
 
@@ -34,15 +35,16 @@
 
         </p>
     </div>
-    <div class="module-content side-dataset">
+    <div class="module-content side-dataset side-dataset">
         <p style="margin-top: 16px; position: fixed;">
         <h3>Helper on Custom Fields</h3>
         <span class="italic-dataset-helper">Here we have all the custom fields that you can use to
             identify your dataset.</span>
-        <table class="table-dataset">
+        <table id="table_databases_base" class="table-dataset"
+            aria-describedby="Table to describe the possible custom fields to use">
             <tr>
-                <th>Key</th>
-                <th>Possible values</th>
+                <th id="dataset_key_base">Key</th>
+                <th id="dataset_values_base">Possible values</th>
             </tr>
             <tr>
                 <td>is_templating</td>
@@ -54,6 +56,10 @@
             </tr>
             <tr>
                 <td>is_patient_store</td>
+                <td>true or false</td>
+            </tr>
+            <tr>
+                <td>is_eu_survey</td>
                 <td>true or false</td>
             </tr>
         </table>
@@ -68,6 +74,10 @@
         <p><span style="font-weight: bold;">is_patient_store</span>
             - This field has the purpose of defining a dataset as a
             data store from the uploaded patients files.
+        </p>
+        <p><span style="font-weight: bold;">is_eu_survey</span>
+            - This field has the purpose of defining a dataset as a
+            data store to EUSurvey questionnaire responses.
         </p>
 
         </p>

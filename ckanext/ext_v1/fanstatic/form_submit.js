@@ -10,6 +10,18 @@ the info is stored there. Otherwise, the resource is updated with a new response
 ckan.module('form_submit', function ($) {
     return {
         initialize: function () {
+            // Verify if already accept the terms. Otherwise show popup
+            var cookieEnabled = (document.cookie.indexOf("cookie_notice_accepted") != -1) ? true : false;
+            if (!cookieEnabled) {
+                setTimeout(function () {
+                    $("#cookieConsent").fadeIn(200);
+                }, 1000);
+                $("#closeCookieConsent, #consentOK").click(function () {
+                    document.cookie = "cookie_notice_accepted=true";
+                    $("#cookieConsent").fadeOut(200);
+                });
+            }
+
             // CKAN url
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
@@ -51,6 +63,7 @@ ckan.module('form_submit', function ($) {
                 $("#loader").css("display", "block");
                 // Auxiliary variables
                 let questions_entity = [];
+                let files_url_entity = [];
                 var list_with_all_questions_and_answers_ids = [];
                 // Get all info from questionnaire
                 $('#quest_content_form > div').each(function () {
@@ -101,19 +114,32 @@ ckan.module('form_submit', function ($) {
                                 form_file_data.append($("#" + key_opt + "").prop('files')[i]["name"], $("#" + key_opt + "").prop('files')[i]);
                             }
                             form_file_data.append("organization_id", organization_id);
+                            let image_structure = [];
                             // AJAX POST request to call custom request to store files uploaded
-                            $.ajax({
-                                async: false,
-                                url: url + 'api/3/action/create_dataset_files_resource',
-                                type: 'POST',
-                                data: form_file_data,
-                                contentType: false, // NEEDED (requires jQuery 1.6+)
-                                processData: false, // NEEDED
-                                success: function (data) {
-                                    // Define data structure of questions/answers
-                                    questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: data.result["urls"] });
-                                }
-                            });
+                            setTimeout(function () {
+                                $.ajax({
+                                    async: false,
+                                    url: url + 'api/3/action/create_dataset_files_resource',
+                                    type: 'POST',
+                                    data: form_file_data,
+                                    contentType: false, // NEEDED (requires jQuery 1.6+)
+                                    processData: false, // NEEDED
+                                    success: function (data) {
+                                        for (var i = 0; i < data.result["files"].length; i++) {
+                                            var key = Object.keys(data.result["files"][i])[0];
+                                            var value = data.result["files"][i][key];
+                                            image_structure.push('<a onclick="window.open(\'' + value + '\') href="' + value + '" target="_blank" rel="noopener noreferrer">' + key + '</a>')
+                                        }
+                                        // image_structure.push(data.result["files"][i]);
+                                        // Define data structure of questions/answers
+                                        files_url_entity.push({ [key_opt + "_answer"]: image_structure });
+                                        questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: "" });
+                                    },
+                                    error: function (data) {
+                                        $('#errorModal').modal('show');
+                                    }
+                                });
+                            }, 0);
                         }
                     });
                 });
@@ -163,6 +189,7 @@ ckan.module('form_submit', function ($) {
                     formData_send.append("name_resource", type_quest);
                     formData_send.append("organization_id", organization_id);
                     formData_send.append("result", JSON.stringify(final_json_to_send));
+                    formData_send.append("files_url", JSON.stringify(files_url_entity));
                     // AJAX POST request to call custom request to create and/or insert submitted questionnaires
                     $.ajax({
                         url: url + 'api/3/action/insert_quests',
@@ -172,10 +199,13 @@ ckan.module('form_submit', function ($) {
                         processData: false, // NEEDED
                         success: function (data) {
                             $('#confirmModal').modal('show');
+                        },
+                        error: function (data) {
+                            $('#errorModal').modal('show');
                         }
                     });
 
-                }, 3000);
+                }, 1500);
             });
         }
     };

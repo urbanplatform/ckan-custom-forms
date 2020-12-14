@@ -19,6 +19,7 @@ from collections import OrderedDict
 
 # Blueprint
 questionnaire = Blueprint("questionnaire", __name__)
+gdpr = Blueprint("privacy-policy", __name__)
 
 # Render html page on ckan
 render = base.render
@@ -48,6 +49,18 @@ def custom_action():
             "type_quest": type_quest,
         },
     )
+
+
+# Method to be able to render GDPR on ckan
+@gdpr.route("/privacy-policy", endpoint="custom_action")
+def custom_action_gdpr():
+    """Method to enable privacy policy render.
+
+    Returns:
+        toolkit.render: It returns an html page with the needed
+        variables
+    """
+    return toolkit.render("home/gdpr.html",)
 
 
 @toolkit.side_effect_free
@@ -99,7 +112,6 @@ def get_key_worker(context, data_dict=None):
             return {"key": user_admin.apikey}
 
 
-# @toolkit.side_effect_free
 def insert_quests(context, data_dict=None):
     """Method to enable members and non members to submit questionnaires and add them into a
     specific resource.
@@ -130,10 +142,11 @@ def insert_quests(context, data_dict=None):
         name_resource.split(".")[0] if "." in name_resource else name_resource
     )
     organization_id = data_json.pop("organization_id", None)
+    files_url = data_json.pop("files_url", None)
     # Initialize variable to have direct access to dabatase
     # Its used to do read requests only
     model = context["model"]
-    if organization_id:
+    try:
         # Get the organization object
         organization = (
             model.Session.query(model.Group)
@@ -164,13 +177,14 @@ def insert_quests(context, data_dict=None):
             )
             print("Create Dataset")
 
-    else:
+    except TypeError as e:
         return {
             "success": False,
             "msg": "Organization name is invalid.",
+            "error": str(e),
         }
 
-    if name_resource:
+    try:
         # Get the resource of the questionnaire submmitted
         resource = (
             model.Session.query(model.Resource)
@@ -204,6 +218,13 @@ def insert_quests(context, data_dict=None):
             result["id"] = result["id"] + "_" + str(number_rows + 1)
         else:
             result["id"] = result["id"] + "_1"
+
+        # Associate urls in the result
+        if files_url:
+            files_url = ast.literal_eval(files_url)
+            for files in files_url:
+                for urls_k, urls_v in files.items():
+                    result[urls_k] = [x.replace('"', "") for x in urls_v]
 
         # Order the dictionary in two phases : by the last word in the in the
         # key string (reverse); by the first word in the key string joined
@@ -265,31 +286,41 @@ def insert_quests(context, data_dict=None):
                 name_package = dataset.name
 
             # Create resource and insert the submitted questionnaire on it
-            if dataset:
-                data_to_send = {
-                    "resource": {
-                        "package_id": str(name_package),
-                        "name": str(name_resource),
-                    },
-                    "force": "true",
-                    "records": [ordered_result],
-                    "primary_key": "id",
-                }
 
-                create_resource_and_insert_quest = toolkit.get_action(
-                    "datastore_create"
-                )(context={"ignore_auth": "true"}, data_dict=data_to_send,)
-                return create_resource_and_insert_quest
-            else:
-                return {
-                    "success": False,
-                    "msg": "Dataset name is invalid.",
-                }
-    else:
-        return {
-            "success": False,
-            "msg": "Resource name is invalid.",
-        }
+            data_to_send = {
+                "resource": {
+                    "package_id": str(name_package),
+                    "name": str(name_resource),
+                    "format": "json",
+                },
+                "force": "true",
+                "records": [ordered_result],
+                "primary_key": "id",
+            }
+
+            create_resource_and_insert_quest = toolkit.get_action("datastore_create")(
+                context={"ignore_auth": "true"}, data_dict=data_to_send,
+            )
+            print(create_resource_and_insert_quest)
+            # Remove text view if exists
+            resource_view_text = (
+                model.Session.query(model.ResourceView)
+                .filter(
+                    model.ResourceView.resource_id
+                    == create_resource_and_insert_quest["resource_id"]
+                )
+                .filter(model.ResourceView.view_type == u"text_view")
+                .first()
+            )
+            if resource_view_text:
+                toolkit.get_action("resource_view_delete")(
+                    context={"ignore_auth": "true"},
+                    data_dict={"id": resource_view_text.id},
+                )
+            return create_resource_and_insert_quest
+
+    except TypeError as e:
+        return {"success": False, "error": str(e)}
 
 
 def create_dataset_files_resource(context, data_dict=None):
@@ -378,8 +409,8 @@ def create_dataset_files_resource(context, data_dict=None):
                 context={"ignore_auth": "true"}, data_dict=data_to_send
             )
             # Append the object to the list
-            urls.append(create_file_resource["url"])
-        return {"urls": urls}
+            urls.append({file_img_k: create_file_resource["url"]})
+        return {"files": urls}
     else:
         return {
             "success": False,
@@ -431,7 +462,7 @@ def get_user_role(context, data_dict=None):
         return {"user_role": "none"}
 
 
-class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
+class GenerateQuestionnairesPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     """Class that inherits from CKANs SingletonPlugin and DefaultDatasetForm.
     Here we can configure which plugins we want to implement, the resources and
     directories to use and create new requests, blueprints, etc.
@@ -461,7 +492,7 @@ class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             object or a list of Flask Blueprint objects
             to be registered by the app.
         """
-        return questionnaire
+        return [questionnaire, gdpr]
 
     def get_actions(self):
         """Create new actions/requests

@@ -9,6 +9,18 @@ dataset. For now, it only accepts input text, radio buttons and files
 ckan.module('actions_resource', function ($) {
     return {
         initialize: function () {
+            // Verify if already accept the terms. Otherwise show popup
+            var cookieEnabled = (document.cookie.indexOf("cookie_notice_accepted") != -1) ? true : false;
+            if (!cookieEnabled) {
+                setTimeout(function () {
+                    $("#cookieConsent").fadeIn(200);
+                }, 1000);
+                $("#closeCookieConsent, #consentOK").click(function () {
+                    document.cookie = "cookie_notice_accepted=true";
+                    $("#cookieConsent").fadeOut(200);
+                });
+            }
+
             // CKAN url
             const init_url = this.sandbox.client.endpoint;
             var url = init_url + "/";
@@ -444,7 +456,7 @@ ckan.module('actions_resource', function ($) {
                                             for (var i = 0; i < files.length; i++) {
                                                 var reader = new FileReader();
                                                 reader.onload = function (e) {
-                                                    $('#' + id_question_file).append('<img class="miniature_img" src="' + e.target.result + '" alt="your image" /> ');
+                                                    $('#' + id_question_file).append('<img class="miniature_img" src="' + e.target.result + '" alt="Image to Upload" /> ');
                                                 }
                                                 reader.readAsDataURL(files[i]);
                                             }
@@ -594,7 +606,8 @@ ckan.module('actions_resource', function ($) {
                     }, 1500);
                 }
                 else {
-                    alert("Answer to all the question please!");
+                    // alert("Answer to all the question please!");
+                    $('#requiredModal').modal('show');
                     return false;
                 }
             });
@@ -625,7 +638,7 @@ ckan.module('actions_resource', function ($) {
                     }, 1500);
                 }
                 else {
-                    alert("Answer to all the question please!");
+                    $('#requiredModal').modal('show');
                 }
             });
 
