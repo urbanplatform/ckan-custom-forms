@@ -134,6 +134,9 @@ ckan.module('form_submit', function ($) {
                                         // Define data structure of questions/answers
                                         files_url_entity.push({ [key_opt + "_answer"]: image_structure });
                                         questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: "" });
+                                    },
+                                    error: function (data) {
+                                        $('#errorModal').modal('show');
                                     }
                                 });
                             }, 0);
@@ -196,6 +199,9 @@ ckan.module('form_submit', function ($) {
                         processData: false, // NEEDED
                         success: function (data) {
                             $('#confirmModal').modal('show');
+                        },
+                        error: function (data) {
+                            $('#errorModal').modal('show');
                         }
                     });
 

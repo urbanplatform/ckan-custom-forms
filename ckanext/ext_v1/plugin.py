@@ -112,7 +112,6 @@ def get_key_worker(context, data_dict=None):
             return {"key": user_admin.apikey}
 
 
-# @toolkit.side_effect_free
 def insert_quests(context, data_dict=None):
     """Method to enable members and non members to submit questionnaires and add them into a
     specific resource.
@@ -147,7 +146,7 @@ def insert_quests(context, data_dict=None):
     # Initialize variable to have direct access to dabatase
     # Its used to do read requests only
     model = context["model"]
-    if organization_id:
+    try:
         # Get the organization object
         organization = (
             model.Session.query(model.Group)
@@ -178,13 +177,14 @@ def insert_quests(context, data_dict=None):
             )
             print("Create Dataset")
 
-    else:
+    except TypeError as e:
         return {
             "success": False,
             "msg": "Organization name is invalid.",
+            "error": str(e),
         }
 
-    if name_resource:
+    try:
         # Get the resource of the questionnaire submmitted
         resource = (
             model.Session.query(model.Resource)
@@ -286,49 +286,41 @@ def insert_quests(context, data_dict=None):
                 name_package = dataset.name
 
             # Create resource and insert the submitted questionnaire on it
-            if dataset:
-                data_to_send = {
-                    "resource": {
-                        "package_id": str(name_package),
-                        "name": str(name_resource),
-                        "format": "json",
-                    },
-                    "force": "true",
-                    "records": [ordered_result],
-                    "primary_key": "id",
-                }
 
-                create_resource_and_insert_quest = toolkit.get_action(
-                    "datastore_create"
-                )(context={"ignore_auth": "true"}, data_dict=data_to_send,)
-                print(create_resource_and_insert_quest)
-                # Remove text view if exists
-                resource_view_text = (
-                    model.Session.query(model.ResourceView)
-                    .filter(
-                        model.ResourceView.resource_id
-                        == create_resource_and_insert_quest["resource_id"]
-                    )
-                    .filter(model.ResourceView.view_type == u"text_view")
-                    .first()
+            data_to_send = {
+                "resource": {
+                    "package_id": str(name_package),
+                    "name": str(name_resource),
+                    "format": "json",
+                },
+                "force": "true",
+                "records": [ordered_result],
+                "primary_key": "id",
+            }
+
+            create_resource_and_insert_quest = toolkit.get_action("datastore_create")(
+                context={"ignore_auth": "true"}, data_dict=data_to_send,
+            )
+            print(create_resource_and_insert_quest)
+            # Remove text view if exists
+            resource_view_text = (
+                model.Session.query(model.ResourceView)
+                .filter(
+                    model.ResourceView.resource_id
+                    == create_resource_and_insert_quest["resource_id"]
                 )
-                if resource_view_text:
-                    print(resource_view_text.view_type)
-                    toolkit.get_action("resource_view_delete")(
-                        context={"ignore_auth": "true"},
-                        data_dict={"id": resource_view_text.id},
-                    )
-                return create_resource_and_insert_quest
-            else:
-                return {
-                    "success": False,
-                    "msg": "Dataset name is invalid.",
-                }
-    else:
-        return {
-            "success": False,
-            "msg": "Resource name is invalid.",
-        }
+                .filter(model.ResourceView.view_type == u"text_view")
+                .first()
+            )
+            if resource_view_text:
+                toolkit.get_action("resource_view_delete")(
+                    context={"ignore_auth": "true"},
+                    data_dict={"id": resource_view_text.id},
+                )
+            return create_resource_and_insert_quest
+
+    except TypeError as e:
+        return {"success": False, "error": str(e)}
 
 
 def create_dataset_files_resource(context, data_dict=None):
@@ -470,7 +462,7 @@ def get_user_role(context, data_dict=None):
         return {"user_role": "none"}
 
 
-class Ext_V1Plugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
+class GenerateQuestionnairesPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     """Class that inherits from CKANs SingletonPlugin and DefaultDatasetForm.
     Here we can configure which plugins we want to implement, the resources and
     directories to use and create new requests, blueprints, etc.
