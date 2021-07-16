@@ -10,7 +10,7 @@ with open(path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="""ckanext-cities-quest""",
+    name="""ckanext-citiesQuest""",
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
@@ -64,7 +64,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points="""
         [ckan.plugins]
-        cities-quest=ckanext.cities-quest.plugin:GenerateQuestionnairesPlugin
+        citiesQuest=ckanext.citiesQuest.plugin:GenerateQuestionnairesPlugin
 
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan

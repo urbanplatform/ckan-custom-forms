@@ -482,7 +482,7 @@ class GenerateQuestionnairesPlugin(plugins.SingletonPlugin, toolkit.DefaultDatas
         """
         toolkit.add_template_directory(config_, "templates")
         toolkit.add_public_directory(config_, "public")
-        toolkit.add_resource("fanstatic", "cities-quest")
+        toolkit.add_resource("fanstatic", "citiesQuest")
 
     def get_blueprint(self):
         """Register an extension as a Flask Blueprint.

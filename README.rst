@@ -2,37 +2,37 @@
 ..    these badges work. The necessary Travis and Coverage config files have been
 ..    generated for you.
 
-.. ..  image:: https://travis-ci.org/lsantos/ckanext-cities-quest.svg?branch=master
-.. ..    :target: https://travis-ci.org/lsantos/ckanext-cities-quest
+.. ..  image:: https://travis-ci.org/lsantos/ckanext-citiesQuest.svg?branch=master
+.. ..    :target: https://travis-ci.org/lsantos/ckanext-citiesQuest
 
-.. ..  image:: https://coveralls.io/repos/lsantos/ckanext-cities-quest/badge.svg
-.. ..  :target: https://coveralls.io/r/lsantos/ckanext-cities-quest
+.. ..  image:: https://coveralls.io/repos/lsantos/ckanext-citiesQuest/badge.svg
+.. ..  :target: https://coveralls.io/r/lsantos/ckanext-citiesQuest
 
-.. ..  image:: https://pypip.in/download/ckanext-cities-quest/badge.svg
-.. ..  :target: https://pypi.python.org/pypi//ckanext-cities-quest/
+.. ..  image:: https://pypip.in/download/ckanext-citiesQuest/badge.svg
+.. ..  :target: https://pypi.python.org/pypi//ckanext-citiesQuest/
 .. ..  :alt: Downloads
 
-.. ..  image:: https://pypip.in/version/ckanext-cities-quest/badge.svg
-.. ..  :target: https://pypi.python.org/pypi/ckanext-cities-quest/
+.. ..  image:: https://pypip.in/version/ckanext-citiesQuest/badge.svg
+.. ..  :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
 .. ..  :alt: Latest Version
 
-.. ..  image:: https://pypip.in/py_versions/ckanext-cities-quest/badge.svg
-.. ..    :target: https://pypi.python.org/pypi/ckanext-cities-quest/
+.. ..  image:: https://pypip.in/py_versions/ckanext-citiesQuest/badge.svg
+.. ..    :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
 .. ..    :alt: Supported Python versions
 
-.. ..  image:: https://pypip.in/status/ckanext-cities-quest/badge.svg
-.. ..    :target: https://pypi.python.org/pypi/ckanext-cities-quest/
+.. ..  image:: https://pypip.in/status/ckanext-citiesQuest/badge.svg
+.. ..    :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
 .. ..    :alt: Development Status
 
-.. ..  image:: https://pypip.in/license/ckanext-cities-quest/badge.svg
-.. ..    :target: https://pypi.python.org/pypi/ckanext-cities-quest/
+.. ..  image:: https://pypip.in/license/ckanext-citiesQuest/badge.svg
+.. ..    :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
 .. ..    :alt: License
 
 ==============
-ckanext-cities-quest
+ckanext-citiesQuest
 ==============
 
-cities-quest is the first version of an objective, efficient and usable CKAN extension, 
+citiesQuest is the first version of an objective, efficient and usable CKAN extension, 
 whose primary goal is to allow users to create and fill one or more questionnaires. 
 Its ultimate purpose is to evaluate information and collect more concise and precise 
 results about all the stakeholders' experience and end-users’ data. Due to CKAN's default 
@@ -71,7 +71,7 @@ an example of a record and all the data recorded.
 
 *Note: all questions and consequent responses are stored*
 
-.. image:: ckanext/cities-quest/public/data_store.jpg
+.. image:: ckanext/citiesQuest/public/data_store.jpg
     :width: 400 px
     :alt: Record from *is_data_store* dataset
 
@@ -97,7 +97,7 @@ The follow image presents an example of a structure associated with a resource o
 
 *Note: You can choose which datasets are private or public to the organization or all platform.*
 
-.. image:: ckanext/cities-quest/public/quests.jpg
+.. image:: ckanext/citiesQuest/public/quests.jpg
     :width: 400 px
     :alt: Record from *is_templating* dataset
 
@@ -146,10 +146,10 @@ properties are mandatory to avoid malformed questionnaires.
 Submit Questionnaire
 --------------------
 
-Having questionnaires already in the platform, ‘cities-quest’ has the permissions to list all of them in the main page. Since each organization can have several templating datasets, each one is labelled with the name of the organization followed by the title of the dataset.
+Having questionnaires already in the platform, ‘citiesQuest’ has the permissions to list all of them in the main page. Since each organization can have several templating datasets, each one is labelled with the name of the organization followed by the title of the dataset.
 In the image below, we can see part of the questionnaires as well as the overall information associated with them.
 
-.. image:: ckanext/cities-quest/public/manual_end.png
+.. image:: ckanext/citiesQuest/public/manual_end.png
     :width: 400 px
     :alt: Record from *is_templating* dataset
 
@@ -189,29 +189,29 @@ version wasn't tested so its not completly safe to use it in others versions.
 Installation
 ============
 
-- To install ckanext-cities-quest in a set of Docker images and configuration files to run a CKAN site (https://github.com/okfn/docker-ckan):
+- To install ckanext-citiesQuest in a set of Docker images and configuration files to run a CKAN site (https://github.com/okfn/docker-ckan):
 
      1. Go to Dockerfile in ckan folder ``/ckan/Dockerfile`` and add::
 
-          RUN pip install -e git+https://gitlab.ubiwhere.com/smart-cities-h2020/tenderhealth/ckan-custom-forms.git@master#egg=ckanext-cities-quest
+          RUN pip install -e git+https://gitlab.ubiwhere.com/smart-cities-h2020/tenderhealth/ckan-custom-forms.git@master#egg=ckanext-citiesQuest
 
-     2. Add the plugin ``cities-quest`` to the ``ckan.plugins`` setting in your CKAN config file
+     2. Add the plugin ``citiesQuest`` to the ``ckan.plugins`` setting in your CKAN config file
 
      3. Run or Restart CKAN container::
 
           docker container start/restart <name_of_ckan_container>
 
-- To install ckanext-cities-quest on local CKAN project:
+- To install ckanext-citiesQuest on local CKAN project:
 
      1. Activate your CKAN virtual environment, for example::
 
           . /usr/lib/ckan/default/bin/activate
 
-     2. Install the ckanext-cities-quest Python package into your virtual environment::
+     2. Install the ckanext-citiesQuest Python package into your virtual environment::
 
-          pip install ckanext-cities-quest
+          pip install ckanext-citiesQuest
 
-     3. Add ``cities-quest`` to the ``ckan.plugins`` setting in your CKAN config file (by default the config file is located at ``/etc/ckan/default/production.ini``).
+     3. Add ``citiesQuest`` to the ``ckan.plugins`` setting in your CKAN config file (by default the config file is located at ``/etc/ckan/default/production.ini``).
 
      4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
 
@@ -222,11 +222,11 @@ Installation
 Development Installation
 ========================
 
-To install ckanext-cities-quest for development, activate your CKAN virtualenv and
+To install ckanext-citiesQuest for development, activate your CKAN virtualenv and
 do::
 
-    git clone https://github.com/lsantos/ckanext-cities-quest.git
-    cd ckanext-cities-quest
+    git clone https://github.com/lsantos/ckanext-citiesQuest.git
+    cd ckanext-citiesQuest
     python setup.py develop
     pip install -r dev-requirements.txt
 
@@ -242,15 +242,15 @@ do::
 .. To run the tests and produce a coverage report, first make sure you have
 .. coverage installed in your virtualenv (``pip install coverage``) then run::
 
-..     nosetests --nologcapture --with-pylons=test.ini --with-coverage --cover-package=ckanext.cities-quest --cover-inclusive --cover-erase --cover-tests
+..     nosetests --nologcapture --with-pylons=test.ini --with-coverage --cover-package=ckanext.citiesQuest --cover-inclusive --cover-erase --cover-tests
 
 
 .. ---------------------------------
-.. Registering ckanext-cities-quest on PyPI
+.. Registering ckanext-citiesQuest on PyPI
 .. ---------------------------------
 
-.. ckanext-cities-quest should be availabe on PyPI as
-.. https://pypi.python.org/pypi/ckanext-cities-quest. If that link doesn't work, then
+.. ckanext-citiesQuest should be availabe on PyPI as
+.. https://pypi.python.org/pypi/ckanext-citiesQuest. If that link doesn't work, then
 .. you can register the project on PyPI for the first time by following these
 .. steps:
 
@@ -275,10 +275,10 @@ do::
 
 
 .. ----------------------------------------
-.. Releasing a New Version of ckanext-cities-quest
+.. Releasing a New Version of ckanext-citiesQuest
 .. ----------------------------------------
 
-.. ckanext-cities-quest is availabe on PyPI as https://pypi.python.org/pypi/ckanext-cities-quest.
+.. ckanext-citiesQuest is availabe on PyPI as https://pypi.python.org/pypi/ckanext-citiesQuest.
 .. To publish a new version to PyPI follow these steps:
 
 .. 1. Update the version number in the ``setup.py`` file.

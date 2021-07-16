@@ -18,13 +18,15 @@
 <li class="active"><a href="#">{{ _('New Questionnaire') }}</a></li>
 {% endblock %}
 <!-- Change snippet for the html page you want-->
-{% block form %}{% snippet 'package/form_questionnaire.html' , data=data, errors=errors, error_summary=error_summary, include_metadata=false, pkg_name=pkg_name, stage=stage, allow_upload=g.ofs_impl and logged_in, dataset_type=dataset_type %}{% endblock %}
+{% block form %}{% snippet 'package/form_questionnaire.html' , data=data, errors=errors, error_summary=error_summary,
+include_metadata=false, pkg_name=pkg_name, stage=stage, allow_upload=g.ofs_impl and logged_in, dataset_type=dataset_type
+%}{% endblock %}
 
 {% block scripts %}
 {{ super() }}
 {% resource 'vendor/fileupload' %}
-{% resource 'cities-quest/form_submit.js' %}
-{% resource 'cities-quest/actions_resource.js' %}
+{% resource 'citiesQuest/form_submit.js' %}
+{% resource 'citiesQuest/actions_resource.js' %}
 {% endblock %}
 
 <!--resource-edit-->
