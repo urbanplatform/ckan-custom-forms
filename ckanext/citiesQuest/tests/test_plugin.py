@@ -1,6 +1,6 @@
 """Tests for plugin.py."""
 import unittest
-import ckanext.ext_v1.plugin as plugin
+import ckanext.citiesQuest.plugin as plugin
 
 
 class PluginTest(unittest.TestCase):

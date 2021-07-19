@@ -249,7 +249,13 @@ def insert_quests(context, data_dict=None):
                     ),
                     (
                         int(s[0].split("_")[-2])
-                        if "_" in s[0] and len(s[0].split("_")) > 2
+                        if "_" in s[0]
+                        and len(s[0].split("_")) > 2
+                        and is_int(s[0].split("_")[-2])
+                        else int(s[0].split("_")[-3])
+                        if "_" in s[0]
+                        and len(s[0].split("_")) > 3
+                        and is_int(s[0].split("_")[-3])
                         else s[0]
                     ),
                 ),
@@ -321,6 +327,23 @@ def insert_quests(context, data_dict=None):
 
     except TypeError as e:
         return {"success": False, "error": str(e)}
+
+
+def is_int(string_to_verify):
+    """Simple method to verify if a specific string
+    can be converted in an integer
+
+    Args:
+        string_to_verify (str): string to verify if can be converted
+
+    Returns:
+        (boolean): True if can be converted. Otherwise returen False
+    """
+    try:
+        int(string_to_verify)
+        return True
+    except ValueError:
+        return False
 
 
 def create_dataset_files_resource(context, data_dict=None):
@@ -482,7 +505,7 @@ class GenerateQuestionnairesPlugin(plugins.SingletonPlugin, toolkit.DefaultDatas
         """
         toolkit.add_template_directory(config_, "templates")
         toolkit.add_public_directory(config_, "public")
-        toolkit.add_resource("fanstatic", "ext_v1")
+        toolkit.add_resource("fanstatic", "citiesQuest")
 
     def get_blueprint(self):
         """Register an extension as a Flask Blueprint.

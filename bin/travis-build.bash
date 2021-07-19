@@ -32,7 +32,7 @@ cd ckan
 paster db init -c test-core.ini
 cd -
 
-echo "Installing ckanext-ext_v1 and its requirements..."
+echo "Installing ckanext-citiesQuest and its requirements..."
 python setup.py develop
 pip install -r dev-requirements.txt
 

@@ -8,7 +8,7 @@ nosetests --ckan \
           --nologcapture \
           --with-pylons=subdir/test.ini \
           --with-coverage \
-          --cover-package=ckanext.ext_v1 \
+          --cover-package=ckanext.citiesQuest \
           --cover-inclusive \
           --cover-erase \
           --cover-tests

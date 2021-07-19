@@ -10,7 +10,7 @@ with open(path.join(here, "README.rst"), encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="""ckanext-ext_v1""",
+    name="""ckanext-citiesQuest""",
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
@@ -18,7 +18,7 @@ setup(
     description="""Extension for TeNDER forms""",
     long_description=long_description,
     # The project's main homepage.
-    url="https://github.com/lsantos/ckanext-ext_v1",
+    url="https://https://github.com/urbanplatform/ckan-custom-forms",
     # Author details
     author="""lsantos""",
     author_email="""lsantos@ubiwhere.com""",
@@ -64,7 +64,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points="""
         [ckan.plugins]
-        ext_v1=ckanext.ext_v1.plugin:GenerateQuestionnairesPlugin
+        citiesQuest=ckanext.citiesQuest.plugin:GenerateQuestionnairesPlugin
 
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan
