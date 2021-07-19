@@ -58,7 +58,7 @@ ckan.module('form_submit', function ($) {
                 //Remove first element
                 var filter_type_list = temp_type_list.filter((v, i) => i !== 0);
                 var type_quest_temp = filter_type_list.map(s => s.trim());
-                var type_quest = type_quest_temp.join("_");
+                var type_quest = type_quest_temp.join(" - ");
                 // Object to store files uploaded
                 var formData_send = new FormData();
                 // Hide div with the final state's text of the questionnaire
