@@ -1,0 +1,61 @@
+{
+ "pages": [
+  {
+   "name": "Introduction",
+   "elements": [
+    {
+     "type": "comment",
+     "name": "comment tender",
+     "title": "OMSI User Report",
+     "hideNumber": true,
+     "defaultValue": "This form contains questions to collect the most precise and crucial to improve the city's response to the reported incidents."
+    }
+   ],
+   "title": "Incident Report",
+   "description": "The follow questionnaire it consists on several questions in order to collect specific information that help us to improve the overall people's lifestyle. Please answer to all the questions with serenity and truthfulness."
+  },
+  {
+   "name": "OMSI User Report",
+   "elements": [
+    {
+     "type": "panel",
+     "name": "Experience A",
+     "elements": [
+      {
+       "type": "html",
+       "name": "question1",
+       "html": "<div class=\"row loc_geo_row\">\n        <div class=\"col-md-6\">\n            <label>Pick the point where the incident occurred</label>\n            <p>Address:</p>\n<span id=\"coords_place\" style=\"display:none\"></span>\n            <textarea style=\"resize: none;\" disabled placeholder=\"Choose an address in the map\" id=\"name_place\"\n                class=\"name_place_geo\"></textarea>\n            <hr>\n            <p id=\"group_spots\" style=\"display: none; margin-top: 16px;\">\n                <span>Please choose the nearest address to the occurence:</span>\n            <ul id=\"list_spots\">\n            </ul>\n            </p>\n        </div>\n        <div class=\"col-md-6 row \" style=\"padding-right: 0 !important;\">\n            <div class=\"col-md-12\" style=\"margin-bottom: 24px;\">\n                <div class=\"input-group\" id=\"search_map\">\n                    <input type=\"text\" class=\"form-control\" placeholder=\"Search for an address\">\n                    <span class=\"input-group-btn\">\n                        <button class=\"btn btn-default map_search\" type=\"button\"><i class=\"fa fa-search\"></i></button>\n                    </span>\n                </div>\n            </div>\n            <div class=\"col-md-12\" id=\"map\" style=\"border:1px solid black; height:350px\">\n            </div>\n            <div class=\"col-md-12\">\n                <p class=\"helper_map\">Please\n                    click or\n                    drag\n                    the marker\n                    to\n                    the point were the occurrence happen</p>\n            </div>\n        </div>\n    </div>\n<!--end_div-->\ntype=mapbox;\nurl=https://api.mapbox.com/geocoding/v5/mapbox.places/;\nkey=pk.eyJ1IjoibHNhbnRvczMiLCJhIjoiY2tnYXd3bGVtMDdhcTJ4bWN4Y2czNGkwciJ9.bOybrqzH6SbJyjByiEyukQ;"
+      },
+      {
+       "type": "text",
+       "name": "question3",
+       "title": "Describe the incident",
+       "isRequired": true,
+       "placeHolder": "Write here..."
+      },
+      {
+       "type": "text",
+       "name": "question4",
+       "title": "When it occurs?",
+       "isRequired": true,
+       "inputType": "datetime",
+       "placeHolder": "11/04/2011 15:30"
+      },
+      {
+       "type": "file",
+       "name": "question5",
+       "title": "If you have photos from the incident, please add them here",
+       "description": "PNG or JPG only",
+       "hideNumber": true,
+       "allowMultiple": true,
+       "maxSize": 0
+      }
+     ],
+     "title": "Incident Form"
+    }
+   ],
+   "title": "OMSI User Report",
+   "description": "Answer to the following questions with serenity"
+  }
+ ]
+}
