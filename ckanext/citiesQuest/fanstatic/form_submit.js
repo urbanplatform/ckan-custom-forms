@@ -54,7 +54,10 @@ ckan.module('form_submit', function ($) {
             // Function on clicking to submit, save and close questionnaire
             $("#submitForm").click(function () {
                 // Get the type of questionnaire string from the title
-                var type_quest = $("#form-title").text().toLowerCase().split("-")[1].trim().split(" ").join("_")
+                var temp_type_list = $("#form-title").text().toLowerCase().split("-");
+                //Remove first element
+                temp_type_list.shift();
+                var type_quest = temp_type_list.trim().join(" ").split(" ").join("_");
                 // Object to store files uploaded
                 var formData_send = new FormData();
                 // Hide div with the final state's text of the questionnaire
