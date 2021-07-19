@@ -1,0 +1,75 @@
+{
+ "pages": [
+  {
+   "name": "Init",
+   "elements": [
+    {
+     "type": "comment",
+     "name": "comment zarit",
+     "title": "OMSI User Feedback",
+     "hideNumber": true,
+     "defaultValue": "This form will contain questions to get the people's opinion on the new public initiative regarding the placing of more trashing bins around the city to ensure a cleaner and more organized city."
+    }
+   ],
+   "title": "New Public Initiative",
+   "description": "The follow questionnaire it consists on several questions in order to collect specific information that help us to improve the overall people's lifestyle. Please answer to all the questions with serenity and truthfulness."
+  },
+  {
+   "name": "OMSI User Feedback",
+   "elements": [
+    {
+     "type": "panel",
+     "name": "Place more trashing bins around the city",
+     "elements": [
+      {
+       "type": "radiogroup",
+       "name": "question1",
+       "title": "How would you rate this new public initiative?\t",
+       "description": "0 if you think its an unnecessary initiative and 5 if you think its a crucial initiative for your lifestyle.",
+       "isRequired": true,
+       "choices": [
+        {
+         "value": "0",
+         "text": "0"
+        },
+        {
+         "value": "1",
+         "text": "1"
+        },
+        {
+         "value": "2",
+         "text": "2"
+        },
+        {
+         "value": "3",
+         "text": "3"
+        },
+        {
+         "value": "4",
+         "text": "4"
+        },
+        {
+         "value": "5",
+         "text": "5"
+        },
+        {
+         "value": "N/A",
+         "text": "N/A"
+        }
+       ]
+      },
+      {
+       "type": "text",
+       "name": "question2",
+       "title": "Constructive Comments (to improve the proposal)"
+      }
+     ],
+     "title": "Place more trashing bins around the city",
+     "description": "This public initiative is regarding the placing of more trashing bins around the city to ensure a cleaner and more organized city"
+    }
+   ],
+   "title": "OMSI User Feedback",
+   "description": "Answer to the following questions with serenity"
+  }
+ ]
+}
