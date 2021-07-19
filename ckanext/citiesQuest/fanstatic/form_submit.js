@@ -142,6 +142,31 @@ ckan.module('form_submit', function ($) {
                             }, 0);
                         }
                     });
+
+                    // For geo location. Here is stored the street string
+                    $("#" + key + " #all_tables .input_location").each(function () {
+                        // Get id row
+                        var key_opt = $(this).attr("id");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_question");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_address_answer");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_coords_answer");
+                        if ($(this).find('textarea').val() != "") {
+                            // Get question
+                            var row_question = $(this).find('label').text().replace('\t', '').replace('*', '');
+                            // Get answers
+                            var answer_location_address = unescape(encodeURIComponent($(this).find('textarea').val())); //.split("<br>");
+                            var answer_location_coords = $(this).find('#coords_place').text();
+                            // var final_answer_location = { "longitude": parseFloat(answer_location_arr[0].split(" ")[1]), "latitude": parseFloat(answer_location_arr[1].split(" ")[1]) }
+                            // Define data structure of questions/answers
+                            questions_entity.push({
+                                [key_opt + "_question"]: row_question,
+                                [key_opt + "_address_answer"]: answer_location_address,
+                                [key_opt + "_coords_answer"]: answer_location_coords
+                            });// JSON.stringify(final_answer_location) });
+                        }
+
+                    });
+
                 });
 
                 setTimeout(function () {
