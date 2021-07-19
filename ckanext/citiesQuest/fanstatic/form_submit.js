@@ -56,8 +56,9 @@ ckan.module('form_submit', function ($) {
                 // Get the type of questionnaire string from the title
                 var temp_type_list = $("#form-title").text().toLowerCase().split("-");
                 //Remove first element
-                temp_type_list.shift();
-                var type_quest = temp_type_list.trim().join(" ").split(" ").join("_");
+                var filter_type_list = temp_type_list.filter((v, i) => i !== 0);
+                var type_quest_temp = filter_type_list.map(s => s.trim());
+                var type_quest = type_quest_temp.join("_");
                 // Object to store files uploaded
                 var formData_send = new FormData();
                 // Hide div with the final state's text of the questionnaire
