@@ -54,7 +54,11 @@ ckan.module('form_submit', function ($) {
             // Function on clicking to submit, save and close questionnaire
             $("#submitForm").click(function () {
                 // Get the type of questionnaire string from the title
-                var type_quest = $("#form-title").text().toLowerCase().split("-")[1].trim().split(" ").join("_")
+                var temp_type_list = $("#form-title").text().toLowerCase().split("-");
+                //Remove first element
+                var filter_type_list = temp_type_list.filter((v, i) => i !== 0);
+                var type_quest_temp = filter_type_list.map(s => s.trim());
+                var type_quest = type_quest_temp.join(" - ");
                 // Object to store files uploaded
                 var formData_send = new FormData();
                 // Hide div with the final state's text of the questionnaire
@@ -142,6 +146,31 @@ ckan.module('form_submit', function ($) {
                             }, 0);
                         }
                     });
+
+                    // For geo location. Here is stored the street string
+                    $("#" + key + " #all_tables .input_location").each(function () {
+                        // Get id row
+                        var key_opt = $(this).attr("id");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_question");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_address_answer");
+                        list_with_all_questions_and_answers_ids.push(key_opt + "_coords_answer");
+                        if ($(this).find('textarea').val() != "") {
+                            // Get question
+                            var row_question = $(this).find('label').text().replace('\t', '').replace('*', '');
+                            // Get answers
+                            var answer_location_address = unescape(encodeURIComponent($(this).find('textarea').val())); //.split("<br>");
+                            var answer_location_coords = $(this).find('#coords_place').text();
+                            // var final_answer_location = { "longitude": parseFloat(answer_location_arr[0].split(" ")[1]), "latitude": parseFloat(answer_location_arr[1].split(" ")[1]) }
+                            // Define data structure of questions/answers
+                            questions_entity.push({
+                                [key_opt + "_question"]: row_question,
+                                [key_opt + "_address_answer"]: answer_location_address,
+                                [key_opt + "_coords_answer"]: answer_location_coords
+                            });// JSON.stringify(final_answer_location) });
+                        }
+
+                    });
+
                 });
 
                 setTimeout(function () {
