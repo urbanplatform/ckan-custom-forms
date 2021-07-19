@@ -1,52 +1,75 @@
-.. .. You should enable this project on travis-ci.org and coveralls.io to make
-..    these badges work. The necessary Travis and Coverage config files have been
-..    generated for you.
-
-.. ..  image:: https://travis-ci.org/lsantos/ckanext-citiesQuest.svg?branch=master
-.. ..    :target: https://travis-ci.org/lsantos/ckanext-citiesQuest
-
-.. ..  image:: https://coveralls.io/repos/lsantos/ckanext-citiesQuest/badge.svg
-.. ..  :target: https://coveralls.io/r/lsantos/ckanext-citiesQuest
-
-.. ..  image:: https://pypip.in/download/ckanext-citiesQuest/badge.svg
-.. ..  :target: https://pypi.python.org/pypi//ckanext-citiesQuest/
-.. ..  :alt: Downloads
-
-.. ..  image:: https://pypip.in/version/ckanext-citiesQuest/badge.svg
-.. ..  :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
-.. ..  :alt: Latest Version
-
-.. ..  image:: https://pypip.in/py_versions/ckanext-citiesQuest/badge.svg
-.. ..    :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
-.. ..    :alt: Supported Python versions
-
-.. ..  image:: https://pypip.in/status/ckanext-citiesQuest/badge.svg
-.. ..    :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
-.. ..    :alt: Development Status
-
-.. ..  image:: https://pypip.in/license/ckanext-citiesQuest/badge.svg
-.. ..    :target: https://pypi.python.org/pypi/ckanext-citiesQuest/
-.. ..    :alt: License
-
-==============
 ckanext-citiesQuest
 ==============
 
-citiesQuest is the first version of an objective, efficient and usable CKAN extension, 
-whose primary goal is to allow users to create and fill one or more questionnaires. 
-Its ultimate purpose is to evaluate information and collect more concise and precise 
-results about all the stakeholders' experience and end-users’ data. Due to CKAN's default 
-structure, the platform easily integrates with the extension.
+CitiesQuest is an objective, efficient, and usable CKAN extension to allow users to create and fill questionnaires and manage the gathered data.
+Since CKAN provides the necessary tools and functionalities for the easy and correct management of data (open or not), implementing this extension will provide a new way of gathering information.
+It can be used for any scenario, although the main focus was the people's feedback.
+Nowadays, people search even more for cities to start their life. The opportunities and resources that a city provides are rising, giving a better lifestyle and stability. This goes to a known conclusion: a city is identified by its people. The people's opinion, lifestyle, security, and mindset are crucial pieces for a city's wellbeing and growth.
+Having that in mind, this extension helps to gather information through the filling of questionnaires, which can be used to get people's feedback, event reports or data that can improve the general management of a city.
 
-For instance, a registered user creates a specific organisation and then adds several datasets to this organisation. 
-With this extension, each dataset created has a particular purpose (e.g. processing a survey template for questionnaire 
-rendering, storing questionnaire responses or storing users’ background information), and tasks for the correct providing 
-and collection of information in a secure way.
+Contextualization
+--------
+CKAN is a dynamic platform that, based on a default structure, allows you to integrate extensions, depending on the requirements imposed. There is a repository of open-source extensions (https://extensions.ckan.org/) that can be easily integrated, saving work and time.
+Since there was the need to gather information through questionnaires and there wasn't any existing extension with it, the CitiesQuest was developed. It works like a new layer over the CKAN structure where the extension's components are directly integrated into the interface. 
 
-The questionnaires have to be uploaded into a specific dataset of the platform, as we will explain further. 
-Their data came from JSON files that were generated on an external website that handles standard survey generation 
-for the web (https://surveyjs.io/Examples/Survey-Creator). Our extension is responsible for reading and taking all 
-that data as well as rendering structured and organised questionnaires. 
+Walkthrough
+--------
+Having the extension installed (check Installation section), the main screen will have some
+For instance, a registered user creates a specific organization and then adds several datasets to this organization. With this extension, each dataset created has a particular purpose (e.g. processing a survey template for questionnaire rendering, storing questionnaire responses, or storing user's background information) and tasks for the correct providing and collection of information in a secure way.
+
+The questionnaires have to be uploaded into a specific platform's dataset, as explained further. Their data came from JSON files generated on an external website that handles standard survey generation for the web (https://surveyjs.io/Examples/Survey-Creator). This extension is responsible for getting the data and rendering structured and organized questionnaires.
+
+In short, using extras pair of key/values in the creation of new datasets, it is possible to
+define each dataset for a specific purpose.
+For now, we have three types of keys:
+
+- **is_data_store**: has the purpose of defining a dataset as a datastore to the questionnaires’ responses;
+
+- **is_patient_store**: has the purpose of defining a dataset as a datastore to the uploaded patients files;
+
+- **is_templating**:has the purpose of defining a dataset as a survey datastore.
+
+*Note: when creating new datasets, add the key into 'Custom Field' input. 
+You can only use one for each dataset.*
+
+
+Installation
+--------
+- To install ckanext-citiesQuest in a set of Docker images and configuration files to run a CKAN site (https://github.com/okfn/docker-ckan):
+
+     1. Go to Dockerfile in ckan folder ``/ckan/Dockerfile`` and add::
+
+          RUN pip install -e git+https://gitlab.ubiwhere.com/smart-cities-h2020/tenderhealth/ckan-custom-forms.git@master#egg=ckanext-citiesQuest
+
+     2. Add the plugin ``citiesQuest`` to the ``ckan.plugins`` setting in your CKAN config file
+
+     3. Run or Restart CKAN container::
+
+          docker container start/restart <name_of_ckan_container>
+
+- To install ckanext-citiesQuest on local CKAN project:
+
+     1. Activate your CKAN virtual environment, for example::
+
+          . /usr/lib/ckan/default/bin/activate
+
+     2. Install the ckanext-citiesQuest Python package into your virtual environment::
+
+          pip install ckanext-citiesQuest
+
+     3. Add ``citiesQuest`` to the ``ckan.plugins`` setting in your CKAN config file (by default the config file is located at ``/etc/ckan/default/production.ini``).
+
+     4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
+
+          sudo service apache2 reload
+
+
+
+Walkthrough
+--------
+For instance, a registered user creates a specific organization and then adds several datasets to this organization. With this extension, each dataset created has a particular purpose (e.g. processing a survey template for questionnaire rendering, storing questionnaire responses, or storing user's background information) and tasks for the correct providing and collection of information in a secure way.
+
+The questionnaires have to be uploaded into a specific platform's dataset, as explained further. Their data came from JSON files generated on an external website that handles standard survey generation for the web (https://surveyjs.io/Examples/Survey-Creator). This extension is responsible for getting the data and rendering structured and organized questionnaires.
 
 In short, using extras pair of key/values in the creation of new datasets, it is possible to
 define each dataset for a specific purpose.
@@ -183,39 +206,6 @@ Requirements
 
 This extension was tested and can be executed for version 2.8 of CKAN. Any other
 version wasn't tested so its not completly safe to use it in others versions.
-
-
-============
-Installation
-============
-
-- To install ckanext-citiesQuest in a set of Docker images and configuration files to run a CKAN site (https://github.com/okfn/docker-ckan):
-
-     1. Go to Dockerfile in ckan folder ``/ckan/Dockerfile`` and add::
-
-          RUN pip install -e git+https://gitlab.ubiwhere.com/smart-cities-h2020/tenderhealth/ckan-custom-forms.git@master#egg=ckanext-citiesQuest
-
-     2. Add the plugin ``citiesQuest`` to the ``ckan.plugins`` setting in your CKAN config file
-
-     3. Run or Restart CKAN container::
-
-          docker container start/restart <name_of_ckan_container>
-
-- To install ckanext-citiesQuest on local CKAN project:
-
-     1. Activate your CKAN virtual environment, for example::
-
-          . /usr/lib/ckan/default/bin/activate
-
-     2. Install the ckanext-citiesQuest Python package into your virtual environment::
-
-          pip install ckanext-citiesQuest
-
-     3. Add ``citiesQuest`` to the ``ckan.plugins`` setting in your CKAN config file (by default the config file is located at ``/etc/ckan/default/production.ini``).
-
-     4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
-
-          sudo service apache2 reload
 
 
 ========================
