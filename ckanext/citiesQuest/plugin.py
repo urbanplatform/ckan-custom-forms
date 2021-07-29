@@ -23,7 +23,7 @@ import logging
 # Blueprint
 questionnaire = Blueprint("questionnaire", __name__)
 gdpr = Blueprint("privacy-policy", __name__)
-logger = logging.Logger()
+logger = logging.getLogger(__name__)
 # Render html page on ckan
 render = base.render
 
