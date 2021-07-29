@@ -223,8 +223,8 @@ def insert_quests(context, data_dict=None):
             result["id"] = result["id"] + "_1"
 
         # Associate urls in the result
-        logger.info("Files URL: ", files_url)
-        logger.info("Files exists: ", len(files_url) if files_url else "No size")
+        logger.info("Files URL: ", str(files_url))
+        logger.info("Files exists: ", str(len(files_url)) if files_url else "No size")
         if files_url:
             files_url = ast.literal_eval(files_url)
             for files in files_url:
@@ -269,7 +269,7 @@ def insert_quests(context, data_dict=None):
 
         # If resource exists update it with the new submitted questionnaire
         if resource:
-            logger.info("Ordered result: ", [ordered_result])
+            logger.info("Ordered result: ", str([ordered_result]))
             data_to_send = {
                 "resource_id": str(resource.id),
                 "force": "true",
