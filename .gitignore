@@ -43,3 +43,11 @@ docs/_build/
 
 # sonar scanner
 .scannerwork
+sonar-project.properties
+
+# ignore dev files
+dev-requirements.txt
+requirements.txt
+
+# Ignore old files
+ckanext/citiesQuest/fanstatic/old_actions_resource.js
