@@ -145,7 +145,7 @@ def insert_quests(context, data_dict=None):
         name_resource.split(".")[0] if "." in name_resource else name_resource
     )
     organization_id = data_json.pop("organization_id", None)
-    files_url = data_json.pop("files_url", [])
+    files_url = data_json.pop("files_url", None)
     # Initialize variable to have direct access to dabatase
     # Its used to do read requests only
     model = context["model"]
@@ -224,7 +224,7 @@ def insert_quests(context, data_dict=None):
 
         # Associate urls in the result
         logger.info("Files URL: %s", str(files_url))
-        logger.info("Files exists: %s", str(len(files_url)) if files_url else "No size")
+        logger.info("Files exists: %d", len(files_url) if files_url else -1)
         if files_url:
             files_url = ast.literal_eval(files_url)
             for files in files_url:
