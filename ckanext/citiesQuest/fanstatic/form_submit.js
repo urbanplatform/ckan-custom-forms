@@ -150,7 +150,7 @@ ckan.module('form_submit', function ($) {
                             }, 0);
                         }
                         else {
-                            files_url_entity.push({ [key_opt + "_answer"]: '' });
+                            files_url_entity.push({ [key_opt + "_answer"]: '-' });
                             questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: "" });
                         }
 
