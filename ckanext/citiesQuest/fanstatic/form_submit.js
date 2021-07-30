@@ -110,10 +110,10 @@ ckan.module('form_submit', function ($) {
                         list_with_all_questions_and_answers_ids.push(key_opt + "_question");
                         list_with_all_questions_and_answers_ids.push(key_opt + "_answer");
 
-                        form_file_data.append("organization_id", organization_id);
-                        let image_structure = [];
-
                         var form_file_data = new FormData();
+                        form_file_data.append("organization_id", organization_id);
+
+                        let image_structure = [];
 
                         // Get question
                         var row_question = $(this).find("label#input_file_question").text().replace('\t', '').replace('*', '');
