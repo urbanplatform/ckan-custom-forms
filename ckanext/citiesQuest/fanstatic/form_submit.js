@@ -120,7 +120,7 @@ ckan.module('form_submit', function ($) {
                             }
                         }
                         else {
-                            form_file_data.append($("#" + key_opt + "").prop('files')[i]["name"], "No file");
+                            form_file_data.append("No file", "");
                         }
                         form_file_data.append("organization_id", organization_id);
                         let image_structure = [];

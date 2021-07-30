@@ -72,7 +72,6 @@ function is_gen_geo_location(type, map_key, url) {
                 url: url_request,
                 type: 'GET',
                 success: function (data) {
-                    console.log(data);
                     group_spots.style.display = 'block';
                     list_spots.style.display = 'block';
                     list_spots.innerHTML = '';
@@ -86,7 +85,6 @@ function is_gen_geo_location(type, map_key, url) {
                         else {
                             var value_map = data["features"][0]["place_name"];
                             coord_values = data["features"][0]["geometry"]["coordinates"][0] + "," + data["features"][0]["geometry"]["coordinates"][1];
-                            console.log(coord_values);
                         }
 
                         margin_bot = "0px";
