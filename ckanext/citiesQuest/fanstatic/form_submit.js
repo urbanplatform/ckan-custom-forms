@@ -109,16 +109,20 @@ ckan.module('form_submit', function ($) {
                         var key_opt = $(this).find('input[type="file"]').attr("id");
                         list_with_all_questions_and_answers_ids.push(key_opt + "_question");
                         list_with_all_questions_and_answers_ids.push(key_opt + "_answer");
+
+                        var form_file_data = new FormData();
+                        form_file_data.append("organization_id", organization_id);
+
+                        let image_structure = [];
+
+                        // Get question
+                        var row_question = $(this).find("label#input_file_question").text().replace('\t', '').replace('*', '');
                         if ($("#" + key_opt + "").prop('files').length > 0) {
-                            // Get question
-                            var row_question = $(this).find("label#input_file_question").text().replace('\t', '').replace('*', '');
                             // Get answer by creating or updating a dataset responsible for storing files
-                            var form_file_data = new FormData();
                             for (var i = 0; i < $("#" + key_opt + "").prop('files').length; i++) {
                                 form_file_data.append($("#" + key_opt + "").prop('files')[i]["name"], $("#" + key_opt + "").prop('files')[i]);
                             }
-                            form_file_data.append("organization_id", organization_id);
-                            let image_structure = [];
+
                             // AJAX POST request to call custom request to store files uploaded
                             setTimeout(function () {
                                 $.ajax({
@@ -145,6 +149,11 @@ ckan.module('form_submit', function ($) {
                                 });
                             }, 0);
                         }
+                        else {
+                            files_url_entity.push({ [key_opt + "_answer"]: '-' });
+                            questions_entity.push({ [key_opt + "_question"]: row_question, [key_opt + "_answer"]: "" });
+                        }
+
                     });
 
                     // For geo location. Here is stored the street string
