@@ -14,7 +14,7 @@ Installation
 
      1. Go to Dockerfile in ckan folder ``/ckan/Dockerfile`` and add:
 
-          RUN pip install -e git+https://gitlab.ubiwhere.com/smart-cities-h2020/tenderhealth/ckan-custom-forms.git@master#egg=ckanext-citiesQuest
+          RUN pip install -e git+https://github.com/urbanplatform/ckan-custom-forms.git@master#egg=ckanext-citiesQuest
 
      2. Add the plugin ``citiesQuest`` to the ``ckan.plugins`` setting in your CKAN config file
 
